@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
-function Zork() {
+import '../Hub.css';
+
+function Zork({ user, onLogout, token }) {
   const navigate = useNavigate();
   const [history, setHistory] = useState(["You are standing in an open field west of a white house, with a boarded front door."]);
   const [input, setInput] = useState('');
@@ -39,9 +41,45 @@ function Zork() {
 
   return (
     <>
-      <button className="back-btn" onClick={() => navigate('/')}>← Back to Hub</button>
+     <div className="hub-container">
+          <div className="sidebar">
+            <div>
+            <h1> Zork Mini</h1>
+            <h2> By Ethan</h2>
+            <p></p>
+            </div>
+    
+    
+    
+           {user ? (
+                <div className="user-info">
+                  <p>Welcome, {user.username}!</p>
+                  <button className="logout-btn" onClick={onLogout}>Logout</button>
+                </div>
+              ) : (
+                <div className="user-info">
+                    <p>Welcome, Guest!</p>
+                  <Link to="/login">
+                    <button className="logout-btn">Login</button>
+                  </Link>
+                  {' '}
+                  <Link to="/register">
+                    <button className="logout-btn">Register</button>
+                  </Link>
+                         <p>Register to record your scores!</p>
+                </div>
+              )}
+         <div>
+               <Link to="/">
+               <button className="logout-btn">Back to Hub</button>
+               </Link>
+         </div>
+          </div>
+          
+          <div className="main-content">
+    
       <div className="zork-container" style={{ maxWidth: 600, margin: '40px auto', background: '#222', color: '#eee', padding: 20, borderRadius: 8 }}>
-        <h2>Zork</h2>
+        <h2>Zork featuring GPT-4o-mini</h2>
         <div className="zork-history" style={{ minHeight: 200, marginBottom: 20 }}>
           {history.map((line, idx) => <div key={idx}>{line}</div>)}
         </div>
@@ -50,6 +88,8 @@ function Zork() {
           <button type="submit" disabled={loading} style={{ padding: '8px 16px', fontSize: 16, background: '#667eea', color: '#fff', border: 'none', borderRadius: 4 }}>{loading ? '...' : 'Go'}</button>
         </form>
       </div>
+           </div>
+    </div>
     </>
   );
 }

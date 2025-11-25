@@ -49,6 +49,13 @@ function Hub({ user, onLogout, token }) {
       description: 'Classic number puzzle game'
     },
     {
+      name: 'Zork',
+      path: '/game/zork',
+      icon: '📜',
+      type: 'openAI',
+      description: 'Text adventure in classic D&D style'
+    },
+    {
       name: 'RocketMans',
       path: '/game/rocketmans',
       icon: '🚀',
@@ -76,36 +83,16 @@ function Hub({ user, onLogout, token }) {
       type: 'game',
       description: 'Make tough choices'
     },
-    {
-      name: 'Zork',
-      path: '/game/zork',
-      icon: '📜',
-      type: 'openAI',
-      description: 'Text adventure in classic D&D style'
-    },
-     {
-      name: 'One Night At Rocket',
-      path: '/game/one-night-at-rocket',
-      icon: '👾',
-      type: 'game',
-      description: 'Survive the night at Rocket HQ!'
-    },
+
   ];
    const utils = [
-    {
-      name: 'ROCXS',
-      path: '/game/rocxs',
-      icon: '🪨',
-      type: 'game',
-      description: 'The ultimate ROCXS challenge!'
-    },
-    {
-      name: 'Matrix Sudoku',
-      path: '/game/sudoku',
-      icon: '⚡',
-      type: 'game',
-      description: 'Classic number puzzle game'
-    },
+    // {
+    //   name: 'ROCXS',
+    //   path: '/game/rocxs',
+    //   icon: '🪨',
+    //   type: 'game',
+    //   description: 'The ultimate ROCXS challenge!'
+    // },
   ];
 
 

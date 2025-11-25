@@ -41,6 +41,10 @@
   display: flex;
 }
 
+.dungeon-crawler {
+  color: white;
+}
+
 .dungeon-cell {
   width: 30px;
   height: 30px;
@@ -67,7 +71,7 @@
   border-radius: 5px;
   min-height: 50px;
   font-size: 16px;
-  color: #333;
+  color: white;
 }
 
 .controls-info {

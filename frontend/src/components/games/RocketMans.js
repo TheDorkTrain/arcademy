@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './RocketMans.css';
 
-function RocketMans({ user, token }) {
+import '../Hub.css';
+
+function RocketMans({ user, onLogout, token }) {
   const navigate = useNavigate();
   const canvasRef = useRef(null);
   const [gameStarted, setGameStarted] = useState(false);
@@ -202,9 +204,44 @@ function RocketMans({ user, token }) {
   };
 
   return (
+     <div className="hub-container">
+          <div className="sidebar">
+            <div>
+            <h1> RocketMans</h1>
+            <h2> By Claude Sonnet 4.5</h2>
+            <p></p>
+            </div>
+    
+    
+    
+           {user ? (
+                <div className="user-info">
+                  <p>Welcome, {user.username}!</p>
+                  <button className="logout-btn" onClick={onLogout}>Logout</button>
+                </div>
+              ) : (
+                <div className="user-info">
+                    <p>Welcome, Guest!</p>
+                  <Link to="/login">
+                    <button className="logout-btn">Login</button>
+                  </Link>
+                  {' '}
+                  <Link to="/register">
+                    <button className="logout-btn">Register</button>
+                  </Link>
+                         <p>Register to record your scores!</p>
+                </div>
+              )}
+         <div>
+               <Link to="/">
+               <button className="logout-btn">Back to Hub</button>
+               </Link>
+         </div>
+          </div>
+          
+          <div className="main-content">
     <div className="game-container">
-      <button className="back-btn" onClick={() => navigate('/')}>← Back to Hub</button>
-      
+  
       <div className="game-header">
         <h1>🚀 RocketMans</h1>
       </div>
@@ -245,6 +282,8 @@ function RocketMans({ user, token }) {
           </ul>
         </div>
       </div>
+    </div>
+    </div>
     </div>
   );
 }

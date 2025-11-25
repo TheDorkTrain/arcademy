@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import './Rocxs.css';
 import rocxsImg1 from './Images/rocx1.png';
 import rocxsImg2 from './Images/roxs2.png';
+import '../Hub.css';
 
-function Rocxs({ user, token }) {
+function Rocxs({ user, onLogout, token }) {
   const [showFirst, setShowFirst] = useState(true);
   const [rocxScore, setRocxScore] = useState(0);
 
@@ -35,6 +37,47 @@ function Rocxs({ user, token }) {
   };
 
   return (
+  <div className="hub-container">
+      {/* {showAd && (
+        <div className="hub-ad-modal">
+          <img src={adImg} alt="Ad" className="hub-ad-image" />
+          <button className="hub-ad-close" onClick={handleCloseAd}>X</button>
+        </div>
+      )} */}
+      <div className="sidebar">
+         <div>
+        <h1> Rocxs</h1>
+        <h2> By Christy and Bryce</h2>
+        <p>Shoutout to Frederick who playtested</p>
+        </div>
+       {user ? (
+            <div className="user-info">
+              <p>Welcome, {user.username}!</p>
+              <button className="logout-btn" onClick={onLogout}>Logout</button>
+            </div>
+          ) : (
+            <div className="user-info">
+                <p>Welcome, Guest!</p>
+              <Link to="/login">
+                <button className="logout-btn">Login</button>
+              </Link>
+              {' '}
+              <Link to="/register">
+                <button className="logout-btn">Register</button>
+              </Link>
+                     <p>Register to record your scores!</p>
+            </div>
+          )}
+     <div>
+           <Link to="/">
+           <button className="logout-btn">Back to Hub</button>
+           </Link>
+     </div>
+      </div>
+      
+      <div className="main-content">
+
+
     <div className="rocxs-game">
       <h2 className="rocxs-title">ROCXS</h2>
       <h3 className="rocxs-title">Score: {rocxScore}</h3>
@@ -49,6 +92,9 @@ function Rocxs({ user, token }) {
       {user && ( <button className="submit-score-btn" onClick={handleSubmitScore}>
         Submit Score
       </button>)}
+    </div>
+
+     </div>
     </div>
   );
 }

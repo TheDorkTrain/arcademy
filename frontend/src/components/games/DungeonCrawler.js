@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './DungeonCrawler.css';
 import log from '../../utils/logger';
 
-function DungeonCrawler({ user, token }) {
+
+import '../Hub.css';
+
+function DungeonCrawler({ user, onLogout, token }) {
   const navigate = useNavigate();
   const [gameStarted, setGameStarted] = useState(false);
   const [player, setPlayer] = useState({ x: 1, y: 1, hp: 100, maxHp: 100, attack: 10, level: 1, exp: 0 });
@@ -305,6 +308,43 @@ function DungeonCrawler({ user, token }) {
   };
 
   return (
+
+     <div className="hub-container">
+          <div className="sidebar">
+            <div>
+            <h1> Dungeon Crawler</h1>
+            <h2> By Claude Sonnet 4.5</h2>
+            <p>Edited to have basic working features by Ethan</p>
+            </div>
+    
+    
+    
+           {user ? (
+                <div className="user-info">
+                  <p>Welcome, {user.username}!</p>
+                  <button className="logout-btn" onClick={onLogout}>Logout</button>
+                </div>
+              ) : (
+                <div className="user-info">
+                    <p>Welcome, Guest!</p>
+                  <Link to="/login">
+                    <button className="logout-btn">Login</button>
+                  </Link>
+                  {' '}
+                  <Link to="/register">
+                    <button className="logout-btn">Register</button>
+                  </Link>
+                         <p>Register to record your scores!</p>
+                </div>
+              )}
+         <div>
+               <Link to="/">
+               <button className="logout-btn">Back to Hub</button>
+               </Link>
+         </div>
+          </div>
+          
+          <div className="main-content">
     <div className="dungeon-crawler">
       <div className="info">
         <div>HP: {player.hp}/{player.maxHp}</div>
@@ -331,6 +371,9 @@ function DungeonCrawler({ user, token }) {
         <button onClick={startGame} disabled={gameStarted}>Start Game</button>
         <button onClick={() => navigate('/')} >Leave Dungeon</button>
       </div>
+    </div>
+
+        </div>
     </div>
   );
 }
