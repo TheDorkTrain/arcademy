@@ -1,0 +1,148 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "option1": "Have the ability to fly",
+      "option2": "Have the ability to become invisible",
+      "category": "Superpowers",
+      "option1Votes": 0,
+      "option2Votes": 0
+    },
+    {
+      "id": 2,
+      "option1": "Live in a world without music",
+      "option2": "Live in a world without movies",
+      "category": "Entertainment",
+      "option1Votes": 1,
+      "option2Votes": 0
+    },
+    {
+      "id": 3,
+      "option1": "Always be 10 minutes late",
+      "option2": "Always be 20 minutes early",
+      "category": "Lifestyle",
+      "option1Votes": 0,
+      "option2Votes": 0
+    },
+    {
+      "id": 4,
+      "option1": "Have the ability to read minds",
+      "option2": "Have the ability to see the future",
+      "category": "Superpowers",
+      "option1Votes": 1,
+      "option2Votes": 0
+    },
+    {
+      "id": 5,
+      "option1": "Travel to the past",
+      "option2": "Travel to the future",
+      "category": "Time Travel",
+      "option1Votes": 1,
+      "option2Votes": 0
+    },
+    {
+      "id": 6,
+      "option1": "Be able to speak all languages",
+      "option2": "Be able to play all musical instruments",
+      "category": "Skills",
+      "option1Votes": 0,
+      "option2Votes": 0
+    },
+    {
+      "id": 7,
+      "option1": "Live without the internet",
+      "option2": "Live without air conditioning/heating",
+      "category": "Technology",
+      "option1Votes": 2,
+      "option2Votes": 0
+    },
+    {
+      "id": 8,
+      "option1": "Have unlimited money",
+      "option2": "Have unlimited time",
+      "category": "Resources",
+      "option1Votes": 0,
+      "option2Votes": 0
+    },
+    {
+      "id": 9,
+      "option1": "Be famous but poor",
+      "option2": "Be rich but unknown",
+      "category": "Lifestyle",
+      "option1Votes": 0,
+      "option2Votes": 1
+    },
+    {
+      "id": 10,
+      "option1": "Only eat sweet food for the rest of your life",
+      "option2": "Only eat savory food for the rest of your life",
+      "category": "Food",
+      "option1Votes": 0,
+      "option2Votes": 1
+    },
+    {
+      "id": 11,
+      "option1": "Live in a treehouse",
+      "option2": "Live in a houseboat",
+      "category": "Living Arrangements",
+      "option1Votes": 0,
+      "option2Votes": 0
+    },
+    {
+      "id": 12,
+      "option1": "Always know when someone is lying",
+      "option2": "Always get away with lying",
+      "category": "Social Skills",
+      "option1Votes": 0,
+      "option2Votes": 0
+    },
+    {
+      "id": 13,
+      "option1": "Have a rewind button for your life",
+      "option2": "Have a pause button for your life",
+      "category": "Life Control",
+      "option1Votes": 0,
+      "option2Votes": 0
+    },
+    {
+      "id": 14,
+      "option1": "Be the funniest person in the room",
+      "option2": "Be the smartest person in the room",
+      "category": "Personal Traits",
+      "option1Votes": 0,
+      "option2Votes": 0
+    },
+    {
+      "id": 15,
+      "option1": "Never have to sleep again",
+      "option2": "Never have to eat again",
+      "category": "Basic Needs",
+      "option1Votes": 0,
+      "option2Votes": 1
+    },
+    {
+      "id": 16,
+      "option1": "Always be stuck in traffic",
+      "option2": "Always have a slow internet connection",
+      "category": "Technology",
+      "option1Votes": 1,
+      "option2Votes": 1
+    },
+    {
+      "id": 17,
+      "option1": "Fly",
+      "option2": "Jump",
+      "category": "Fun",
+      "option1Votes": 0,
+      "option2Votes": 0
+    },
+    {
+      "id": 18,
+      "option1": "Run",
+      "option2": "Skip",
+      "category": "Exercise",
+      "option1Votes": 1,
+      "option2Votes": 0
+    }
+  ]
+}

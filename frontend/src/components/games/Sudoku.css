@@ -1,0 +1,339 @@
+/* Matrix Theme Styles */
+.sudoku-matrix-container {
+  position: relative;
+  background: #000;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.matrix-rain {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.sudoku-content-wrapper {
+  position: relative;
+  z-index: 2;
+}
+
+.matrix-title {
+  color: #0F0;
+  text-shadow: 0 0 10px #0F0, 0 0 20px #0F0, 0 0 30px #0F0;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 3px;
+  animation: matrixGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes matrixGlow {
+  from {
+    text-shadow: 0 0 10px #0F0, 0 0 20px #0F0, 0 0 30px #0F0;
+  }
+  to {
+    text-shadow: 0 0 20px #0F0, 0 0 30px #0F0, 0 0 40px #0F0, 0 0 50px #0F0;
+  }
+}
+
+.sudoku-controls {
+  margin-bottom: 20px;
+}
+
+.game-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.game-info p {
+  font-size: 18px;
+  font-weight: bold;
+  color: #667eea;
+}
+
+.matrix-controls {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 15px;
+  border: 2px solid #0F0;
+  border-radius: 5px;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+}
+
+.matrix-text {
+  color: #0F0 !important;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 5px #0F0;
+  letter-spacing: 2px;
+}
+
+.matrix-select,
+.matrix-btn {
+  padding: 8px 16px;
+  border: 2px solid #0F0;
+  border-radius: 5px;
+  background: #000;
+  color: #0F0;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-shadow: 0 0 5px #0F0;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.matrix-select:hover,
+.matrix-btn:hover {
+  background: #0F0;
+  color: #000;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+  text-shadow: none;
+}
+
+.game-info select,
+.game-info button {
+  padding: 8px 16px;
+  border: 2px solid #667eea;
+  border-radius: 5px;
+  background: white;
+  color: #667eea;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.game-info button:hover {
+  background: #667eea;
+  color: white;
+}
+
+.sudoku-board {
+  display: inline-block;
+  border: 3px solid #333;
+  margin: 0 auto 20px;
+}
+
+.matrix-board {
+  border: 3px solid #0F0;
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.6);
+  background: #000;
+}
+
+.sudoku-row {
+  display: flex;
+}
+
+.sudoku-cell {
+  width: 50px;
+  height: 50px;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.matrix-cell {
+  background: #000;
+  border: 1px solid #0F0;
+  color: #0F0;
+  font-family: 'Courier New', monospace;
+  transition: all 0.3s;
+}
+
+.matrix-digit {
+  text-shadow: 0 0 8px #0F0, 0 0 12px #0F0;
+  animation: digitFlicker 3s ease-in-out infinite;
+}
+
+@keyframes digitFlicker {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.sudoku-cell:nth-child(3n) {
+  border-right: 2px solid #333;
+}
+
+.matrix-cell:nth-child(3n) {
+  border-right: 2px solid #0F0;
+}
+
+.sudoku-row:nth-child(3n) .sudoku-cell {
+  border-bottom: 2px solid #333;
+}
+
+.sudoku-row:nth-child(3n) .matrix-cell {
+  border-bottom: 2px solid #0F0;
+}
+
+.sudoku-cell.fixed {
+  background: #f0f0f0;
+  color: #333;
+  cursor: not-allowed;
+}
+
+.matrix-fixed {
+  background: #001100 !important;
+  color: #00FF00 !important;
+  cursor: not-allowed;
+  box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
+}
+
+.matrix-editable {
+  background: #000;
+  cursor: pointer;
+}
+
+.matrix-editable:hover {
+  background: #002200 !important;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+}
+
+.sudoku-cell.selected {
+  background: #d4e3fc;
+}
+
+.matrix-selected {
+  background: #003300 !important;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.8), inset 0 0 20px rgba(0, 255, 0, 0.3);
+  animation: matrixPulse 1s ease-in-out infinite;
+}
+
+@keyframes matrixPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.8), inset 0 0 20px rgba(0, 255, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 255, 0, 1), inset 0 0 30px rgba(0, 255, 0, 0.5);
+  }
+}
+
+.sudoku-cell:not(.fixed):hover {
+  background: #e8f0fe;
+}
+
+.number-pad {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.matrix-pad {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 15px;
+  border: 2px solid #0F0;
+  border-radius: 5px;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+}
+
+.number-pad button {
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
+  font-weight: bold;
+  border: 2px solid #667eea;
+  background: white;
+  color: #667eea;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.matrix-num-btn {
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
+  font-weight: bold;
+  border: 2px solid #0F0 !important;
+  background: #000 !important;
+  color: #0F0 !important;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 5px #0F0;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+  transition: all 0.3s;
+}
+
+.matrix-num-btn:hover {
+  background: #0F0 !important;
+  color: #000 !important;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+  text-shadow: none;
+  transform: scale(1.1);
+}
+
+.matrix-clear {
+  background: #000 !important;
+  border-color: #FF0000 !important;
+  color: #FF0000 !important;
+  text-shadow: 0 0 5px #FF0000;
+}
+
+.matrix-clear:hover {
+  background: #FF0000 !important;
+  color: #000 !important;
+  text-shadow: none;
+}
+
+.number-pad button:hover {
+  background: #667eea;
+  color: white;
+}
+
+.win-message {
+  margin-top: 20px;
+  padding: 20px;
+  background: #4caf50;
+  color: white;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.matrix-win {
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: 3px solid #0F0;
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
+  animation: victoryPulse 1s ease-in-out infinite;
+}
+
+@keyframes victoryPulse {
+  0%, 100% {
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 50px rgba(0, 255, 0, 1);
+  }
+}
+
+.matrix-win-text {
+  color: #0F0;
+  font-family: 'Courier New', monospace;
+  font-size: 24px;
+  text-shadow: 0 0 10px #0F0, 0 0 20px #0F0;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+.matrix-win-time {
+  color: #0F0;
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  text-shadow: 0 0 5px #0F0;
+}

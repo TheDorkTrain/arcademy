@@ -1,0 +1,33 @@
+/* Ad modal styles */
+.hub-ad-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.hub-ad-image {
+  max-width: 400px;
+  width: 90vw;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+.hub-ad-close {
+  margin-top: 1rem;
+  padding: 0.5rem 1.2rem;
+  font-size: 1.3rem;
+  background: #ff3c00;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}

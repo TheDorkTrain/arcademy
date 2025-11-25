@@ -1,0 +1,73 @@
+.rocket-game {
+  position: relative;
+  display: inline-block;
+  margin: 20px auto;
+}
+
+.game-canvas {
+  border: 3px solid #667eea;
+  border-radius: 10px;
+  display: block;
+  background: #1a1a2e;
+}
+
+.game-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  border-radius: 10px;
+}
+
+.game-overlay h2 {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+.game-overlay p {
+  font-size: 20px;
+  margin: 10px 0;
+}
+
+.start-btn {
+  margin-top: 20px;
+  padding: 15px 40px;
+  font-size: 20px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.start-btn:hover {
+  background: #5568d3;
+}
+
+.game-instructions {
+  margin-top: 30px;
+  text-align: left;
+}
+
+.game-instructions h3 {
+  color: #667eea;
+  margin-bottom: 15px;
+}
+
+.game-instructions ul {
+  list-style-position: inside;
+  color: #666;
+}
+
+.game-instructions li {
+  margin: 8px 0;
+  font-size: 16px;
+}

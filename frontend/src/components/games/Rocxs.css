@@ -1,0 +1,69 @@
+.rocxs-game {
+  padding: 2rem;
+  background: #23272f;
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.rocxs-title {
+  color: #00c3ff;
+  text-align: center;
+  font-family: 'Orbitron', 'Arial Black', Arial, sans-serif;
+  font-size: 2.5rem;
+  letter-spacing: 3px;
+  margin-bottom: 2rem;
+}
+ .rocxs-gif-wrapper {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   margin-top: 2rem;
+ }
+
+.rocxs-ad-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.rocxs-ad-image {
+  max-width: 400px;
+  width: 90vw;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+.rocxs-ad-close {
+  margin-top: 1rem;
+  padding: 0.5rem 1.2rem;
+  font-size: 1.3rem;
+  background: #ff3c00;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+ .rocxs-gif {
+   max-width: 400px;
+   width: 100%;
+   height: auto;
+   border-radius: 12px;
+   box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+   transition: transform 0.5s cubic-bezier(.68,-0.55,.27,1.55);
+   cursor: pointer;
+ }
+
+ .rocxs-gif.rotated {
+   transform: rotate(180deg);
+ }
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');

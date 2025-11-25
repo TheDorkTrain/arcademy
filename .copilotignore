@@ -1,0 +1,13 @@
+# .copilotignore
+# Files and folders ignored by GitHub Copilot suggestions
+
+node_modules/
+.env
+*.log
+*.sqlite3
+*.db
+__pycache__/
+*.pyc
+.DS_Store
+.vscode/
+backend/instance/gamehub.db
