@@ -49,7 +49,7 @@ function Hub({ user, onLogout, token }) {
       description: 'Classic number puzzle game'
     },
     {
-      name: 'Zork',
+      name: 'Zork Mini',
       path: '/game/zork',
       icon: '📜',
       type: 'openAI',
@@ -75,6 +75,13 @@ function Hub({ user, onLogout, token }) {
       icon: '🏃‍♂️',
       type: 'game',
       description: 'Discover your athletic personality'
+    },
+      {
+      name: 'Every Night the Crab Attacks',
+      path: '/game/crabAttacks',
+      icon: '🦀',
+      type: 'game',
+      description: 'Try and escape the island before the crab gets you.'
     },
     {
       name: 'Would You Rather',
