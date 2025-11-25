@@ -1,30 +1,16 @@
 
-# Sudoku Game
+# Arcademy Hub
 
-A beginner-friendly console-based Sudoku game written in Python. This implementation features clean, modular code with comprehensive comments, making it perfect for learning and easy to integrate into larger game hub projects.
+A central hub for posting games and utils. 
 
 ## Features
 
-- **Console-based gameplay** - No GUI required, runs entirely in the terminal
-- **Three difficulty levels** - Easy, Medium, and Hard
-- **Intelligent puzzle generation** - Creates valid, solvable Sudoku puzzles
-- **Backtracking solver** - Ensures all generated puzzles have unique solutions
-- **Input validation** - Prevents invalid moves according to Sudoku rules
-- **Hint system** - Get help when you're stuck
-- **Clean, modular code** - Well-organized modules for easy maintenance and integration
-- **Comprehensive comments** - Every function is documented for beginners
-
-## Installation
-
-### Prerequisites
-- Python 3.7 or higher
+- **Score Keeping** - Register to log scores on games that support it.
+- **Entertainment for Hour** - Multiple short games to keep entertainment for at least an hour.
 
 ### Setup
 1. Clone or download this repository
 2. Navigate to the project directory:
-```bash
-cd team-4
-```
 
 3. (Optional) Create a virtual environment:
 ```bash
@@ -32,112 +18,34 @@ python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-4. No additional dependencies required - uses only Python standard library!
+1. Install Dependencies
+```bash
+npm run install
+```
 
 ## How to Run
 
-Run the game using:
+Run the hub by using:
 ```bash
-python main.py
+npm run start
 ```
 
-Or directly from the Sudoku package:
-```bash
-python -m Sudoku.game
-```
+## How to Use (Player)
+- Play Games in your local browser
+- Register locally to record your scores
+- Certain games require an OpenAPI Key set up in your .env file.
 
-## How to Play
+### Games
+- Rocxs - A Clicker
+- Matrix Soduku - Hit puzzle game with a techy visual
+- Zork Mini - A text adventure in classic D&D style
+- RocketMans- Flappybird ripoff
+- Dungeon Crawler - small dungeon crawler with limited features
+- Athlete Personality Quiz - Match your athlete type based on your answers
+- Every Night the Crab Attacks - A short survival game where a crab attacks at night
+- Would you Rather - A "this or that" question picker
 
-### Game Rules
-- Fill the 9x9 grid so that each row, column, and 3x3 box contains digits 1-9
-- Each number can appear only once in each row, column, and 3x3 box
-- Some cells are pre-filled and cannot be modified
-
-### Commands
-
-| Command | Description | Example |
-|---------|-------------|---------|
-| `place <row> <col> <num>` | Place a number at coordinates | `place 3 5 7` |
-| `clear <row> <col>` | Clear a cell you filled | `clear 3 5` |
-| `hint` | Get a hint (reveals one cell) | `hint` |
-| `check` | Validate your current progress | `check` |
-| `solve` | Show the complete solution | `solve` |
-| `new` | Start a new game | `new` |
-| `help` | Show help information | `help` |
-| `quit` | Exit the game | `quit` |
-
-### Coordinates
-- Rows are numbered 1-9 (top to bottom)
-- Columns are numbered 1-9 (left to right)
-- Example: `place 1 1 5` places the number 5 in the top-left corner
-
-# GameHub - Multi-Game Platform
-
-A web application featuring a collection of mini-games with user authentication and score tracking. Built with React.js frontend and Python Flask backend.
-
-## Features
-
-- **User Authentication**: Register and login to track your scores
-- **Score Tracking**: Your best scores are saved and displayed in the sidebar
-- **5 Mini-Games**:
-  - 🔢 **Sudoku**: Classic number puzzle game with difficulty levels
-  - 🚀 **RocketMans**: Navigate your rocket through obstacles
-  - ⚔️ **Dungeon Crawler**: Explore dungeons, fight monsters, and level up
-  - 🧠 **Personality Quiz**: Discover your personality type
-  - 🤔 **Would You Rather**: Make choices and get personality insights
-
-## Setup Instructions
-
-### Backend Setup (Python Flask)
-
-1. Navigate to the backend directory:
-```powershell
-cd GameHub\backend
-```
-
-2. Create a virtual environment (optional but recommended):
-```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-```
-
-3. Install dependencies:
-```powershell
-pip install -r requirements.txt
-```
-
-4. Run the Flask server:
-```powershell
-python app.py
-```
-
-The backend will run on `http://localhost:5000`
-
-### Frontend Setup (React)
-
-1. Navigate to the frontend directory:
-```powershell
-cd GameHub\frontend
-```
-
-2. Install dependencies:
-```powershell
-npm install
-```
-
-3. Install loglevel for logging:
-```powershell
-npm install loglevel
-```
-
-4. Start the React development server:
-```powershell
-npm start
-```
-
-The frontend will run on `http://localhost:3000`
-
-## How to Use
+## How to Use (Player)
 
 1. **Start both servers** (backend and frontend)
 2. **Open your browser** to `http://localhost:3000`
@@ -145,13 +53,18 @@ The frontend will run on `http://localhost:3000`
 4. **Click on any game** to start playing
 5. **Your scores will be saved** if you're logged in and displayed in the left sidebar
 
-## Game Controls
+## How to Use (Adding a Game)
 
-- **Sudoku**: Click cells to select, use number pad to fill
-- **RocketMans**: Press SPACE or ↑ to fly
-- **Dungeon Crawler**: Use arrow keys to move and attack
-- **Personality Quiz**: Click your preferred answers
-- **Would You Rather**: Choose between two options
+When adding a game or a utility there are a number of files you will have to touch
+ - Add your react .js game file into the /frontend/src/components/games folder
+   - It is reccommended that you use the wrapper located in the /templates/ folder 
+ - If your project has a backend add a folder into to the /backend/
+ - Add any react dependencies to /frontend/package.json
+ - Add any python dependencies to /backend/requirements.txt
+ - Add routing for your app in the /frontend/src/App.js
+ - Add a Hub Icon in the games array in /frontend/src/components/Hub.js
+ - When the game is ready you can play it locally or request permission to push it as a release
+ - When pushing to the collaborative github, you will be unable to push to main. Make a pullrequest from a branch named after the tool you wish to implement.
 
 ## Technologies Used
 
@@ -167,39 +80,41 @@ The frontend will run on `http://localhost:3000`
 - Flask-JWT-Extended (Authentication)
 - bcrypt (Password hashing)
 - SQLite (Database)
->>>>>>> 1cea002c6abf7ee262d6be7f31dee3301445ad17
+- Love2d Framework for Lua
 
 ## Project Structure
 
 ```
-GameHub/
+Arcademy/
 ├── backend/
-│   ├── app.py              # Flask application and API routes
 │   ├── requirements.txt    # Python dependencies
-│   ├── .env               # Environment variables
-│   └── gamehub.db         # SQLite database (created automatically)
+│   ├── login               # Backend for login and scores
+|   |
+|   |                        -Backends for Games that require them-
+│   └── would_you_rather_api         
+│   └── crabAttacks      
 │
 └── frontend/
     ├── public/
     │   └── index.html
     ├── src/
+    |   |
     │   ├── components/
-    │   │   ├── Hub.js           # Main game hub
-    │   │   ├── Login.js         # Login form
-    │   │   ├── Register.js      # Registration form
+    │   ├── Hub.js           # Main game hub    
     │   │   └── games/
+    |   |       |            - Game Files go here -
     │   │       ├── Sudoku.js
     │   │       ├── RocketMans.js
     │   │       ├── DungeonCrawler.js
     │   │       ├── PersonalityQuiz.js
     │   │       └── WouldYouRather.js
-    │   ├── App.js
+    │   ├── App.js          - Game Routing goes here-
     │   ├── App.css
     │   └── index.js
     └── package.json
 ```
 
-## API Endpoints
+## Login API Endpoints
 
 - `POST /api/register` - Register a new user
 - `POST /api/login` - Login user

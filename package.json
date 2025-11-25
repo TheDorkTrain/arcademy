@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "concurrently \"cd backend/login && python app.py\" \"cd backend && python -m would_you_rather_api.questions_flask_api\" \"cd frontend && npm start\"",
+    "start": "concurrently \"cd backend/login && python app.py\" \"cd backend && python -m would_you_rather_api.questions_flask_api\" \"cd backend/crabAttacks && python lovejs_server.py\" \"cd frontend && npm start\"",
     "install": "concurrently \"cd backend && pip install -r requirements.txt\" \"cd frontend && npm install\"",
     "build": "cd frontend && npm run build"
   },
+  "proxy": "http://localhost:8080",
   "keywords": [],
   "author": "",
   "license": "ISC",
