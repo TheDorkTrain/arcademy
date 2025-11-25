@@ -59,6 +59,7 @@ When adding a game or a utility there are a number of files you will have to tou
  - Add your react .js game file into the /frontend/src/components/games folder
    - It is reccommended that you use the wrapper located in the /templates/ folder 
  - If your project has a backend add a folder into to the /backend/
+   - you will also need to add to the start command in the root package.json to add it to the start routine
  - Add any react dependencies to /frontend/package.json
  - Add any python dependencies to /backend/requirements.txt
  - Add routing for your app in the /frontend/src/App.js
