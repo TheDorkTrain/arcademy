@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import '../Hub.css';
+import '../../Hub.css';
 
 const LoveGame = ({ 
   gameFile = 'CrabAttacks.love', 

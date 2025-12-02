@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
-import '../Hub.css';
+import '../../Hub.css';
 
 function Zork({ user, onLogout, token }) {
   const navigate = useNavigate();

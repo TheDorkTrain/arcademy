@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './PersonalityQuiz.css';
 
-import '../Hub.css';
+import '../../Hub.css';
 function PersonalityQuiz({ user, onLogout, token }) {
   const navigate = useNavigate();
   const [currentQuestion, setCurrentQuestion] = useState(0);

@@ -106,16 +106,28 @@ Write-Host "Checking dependencies..." -ForegroundColor Yellow
 # Check if node_modules exists
 if (-not (Test-Path ".\node_modules") -or -not (Test-Path ".\frontend\node_modules")) {
     Write-Host "Installing dependencies (this may take a few minutes)..." -ForegroundColor Yellow
+    
+    # First install root dependencies (including concurrently)
+    Write-Host "Step 1: Installing root dependencies..." -ForegroundColor Cyan
+    npm install
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[ERROR] Failed to install root dependencies" -ForegroundColor Red
+        exit 1
+    }
+    Write-Host "[OK] Root dependencies installed" -ForegroundColor Green
+    
+    # Then install backend and frontend dependencies
+    Write-Host "Step 2: Installing backend and frontend dependencies..." -ForegroundColor Cyan
     npm run install
     if ($LASTEXITCODE -eq 0) {
-        Write-Host "[OK] Dependencies installed successfully" -ForegroundColor Green
+        Write-Host "[OK] All dependencies installed successfully" -ForegroundColor Green
     } else {
-        Write-Host "[ERROR] Failed to install dependencies" -ForegroundColor Red
+        Write-Host "[ERROR] Failed to install backend/frontend dependencies" -ForegroundColor Red
         exit 1
     }
 } else {
     Write-Host "[OK] Dependencies already installed" -ForegroundColor Green
-    Write-Host "    (Run 'npm run install' if you need to update dependencies)" -ForegroundColor Gray
+    Write-Host "    (Run 'npm install' then 'npm run install' if you need to update dependencies)" -ForegroundColor Gray
 }
 
 Write-Host ""
