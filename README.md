@@ -105,6 +105,8 @@ If you prefer to set up manually or the automatic script doesn't work:
 
 2. **Install dependencies**
    ```powershell
+   npm install
+   -- then--
    npm run install
    ```
    This installs both backend (Python) and frontend (Node.js) dependencies.
