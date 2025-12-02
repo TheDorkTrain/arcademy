@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import '../Hub.css';
+import '../../Hub.css';
 
 const LoveGame = ({ 
   gameFile = 'CrabAttacks.love', 
@@ -32,16 +32,26 @@ const LoveGame = ({
   };
 
   return (
-    <div className="love-game-container">
+    <div className="love-game-container" style={{
+      width: '100%',
+      maxWidth: '900px',
+      margin: '0 auto',
+      position: 'relative',
+      paddingBottom: '75%', // 4:3 aspect ratio
+      height: 0,
+      overflow: 'hidden'
+    }}>
       <iframe
         ref={iframeRef}
         src={buildGameUrl()}
-        width={width}
-        height={height}
         style={{
           border: 'none',
-          display: 'block',
-          margin: '0 auto'
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          borderRadius: '10px'
         }}
         title="LÖVE Game"
         allow="cross-origin-isolated"
@@ -90,21 +100,45 @@ function CrabAttacks({ user, onLogout, token }) {
       
       <div className="main-content">
        
-     <div className="min-h-screen bg-gray-900 p-8">
-      <div className="max-w-4xl mx-auto" style={{backgroundColor: 'white'}}>
-        <h1 className="text-3xl font-bold text-white mb-6 text-center">
+     <div style={{
+       minHeight: '100vh',
+       height: '100vh',
+       padding: '20px',
+       overflow: 'auto',
+       boxSizing: 'border-box'
+     }}>
+      <div style={{
+        maxWidth: '1000px',
+        width: '100%',
+        margin: '0 auto',
+        padding: '20px',
+        backgroundColor: 'white',
+        borderRadius: '20px',
+        boxSizing: 'border-box'
+      }}>
+        <h1 style={{
+          fontSize: 'clamp(24px, 5vw, 36px)',
+          fontWeight: 'bold',
+          color: '#333',
+          marginBottom: '20px',
+          textAlign: 'center'
+        }}>
           Every Night the Crab Attacks
         </h1>
         
         <LoveGame 
           gameFile="CrabAttacks.love"
           version="11.5"
-          width="800px"
-          height="600px"
         />
         
-        <div className="mt-6 text-center">
-          <p className="text-gray-400 text-sm">
+        <div style={{
+          marginTop: '20px',
+          textAlign: 'center'
+        }}>
+          <p style={{
+            color: '#666',
+            fontSize: '14px'
+          }}>
             **Note for this embedded release the exit game button breaks it**
           </p>
         </div>

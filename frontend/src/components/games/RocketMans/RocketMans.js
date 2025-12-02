@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './RocketMans.css';
 
-import '../Hub.css';
+import '../../Hub.css';
 
 function RocketMans({ user, onLogout, token }) {
   const navigate = useNavigate();

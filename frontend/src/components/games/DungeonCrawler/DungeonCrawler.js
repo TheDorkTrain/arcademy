@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './DungeonCrawler.css';
-import log from '../../utils/logger';
+import log from '../../../utils/logger';
 
 
-import '../Hub.css';
+import '../../Hub.css';
 
 function DungeonCrawler({ user, onLogout, token }) {
   const navigate = useNavigate();

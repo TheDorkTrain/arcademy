@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import './WouldYouRather.css';
-import '../Hub.css';
+import '../../Hub.css';
 
 const API_URL = 'http://127.0.0.1:8000';
 const TOKEN = 'carol-secret-token'; // Replace with your actual token logic

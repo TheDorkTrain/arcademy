@@ -90,6 +90,13 @@ function Hub({ user, onLogout, token }) {
       type: 'game',
       description: 'Make tough choices'
     },
+    {
+      name: 'Bingo',
+      path: '/game/bingo',
+      icon: '🎲',
+      type: 'game',
+      description: 'Eggman Bingo & Custom Boards'
+    },
 
   ];
    const utils = [

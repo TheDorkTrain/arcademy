@@ -1,0 +1,558 @@
+/* Bingo Game Styles */
+
+.bingo-content {
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* Mode Selection */
+.bingo-mode-select {
+  text-align: center;
+  width: 100%;
+  max-width: 800px;
+}
+
+.bingo-mode-select h2 {
+  color: #333;
+  margin-bottom: 40px;
+  font-size: 32px;
+}
+
+.mode-buttons {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.mode-btn {
+  background: linear-gradient(135deg, var(--rocketBlue), var(--rocketAlt));
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 40px 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 8px 20px rgba(80, 62, 255, 0.3);
+}
+
+.mode-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(80, 62, 255, 0.5);
+}
+
+.mode-icon {
+  font-size: 64px;
+}
+
+.mode-icon-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.mode-title {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.mode-desc {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.custom-btn {
+  background: linear-gradient(135deg, var(--rocketPurple), var(--rocketDark));
+  box-shadow: 0 8px 20px rgba(153, 0, 153, 0.3);
+}
+
+.custom-btn:hover {
+  box-shadow: 0 12px 30px rgba(153, 0, 153, 0.5);
+}
+
+/* Custom Input */
+.custom-input-container {
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.custom-input-container h2 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 28px;
+}
+
+.custom-input-container p {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.custom-textarea {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.custom-textarea:focus {
+  outline: none;
+  border-color: var(--rocketBlue);
+}
+
+.input-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.submit-btn,
+.cancel-btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, var(--rocketBlue), var(--rocketAlt));
+  color: white;
+  box-shadow: 0 4px 15px rgba(80, 62, 255, 0.3);
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(80, 62, 255, 0.5);
+}
+
+.cancel-btn {
+  background: #e0e0e0;
+  color: #666;
+}
+
+.cancel-btn:hover {
+  background: #d0d0d0;
+}
+
+/* Bingo Game */
+.bingo-game {
+  width: 100%;
+  max-width: 900px;
+}
+
+.bingo-header-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.bingo-header-controls h2 {
+  color: #333;
+  margin: 0;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-icon-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(153, 0, 153, 0.3);
+}
+
+.game-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.control-btn {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, var(--rocketBlue), var(--rocketAlt));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(80, 62, 255, 0.3);
+}
+
+.control-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(80, 62, 255, 0.5);
+}
+
+/* Winner Overlay */
+.winner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.winner-content {
+  background: white;
+  border-radius: 20px;
+  padding: 35px;
+  text-align: center;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.winner-banner {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: white;
+  padding: 25px 20px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 25px;
+  animation: winnerPulse 1s ease-in-out infinite;
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+}
+
+@keyframes winnerPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.winner-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.winner-btn-new,
+.winner-btn-menu,
+.winner-btn-see {
+  padding: 16px 32px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  text-align: center;
+}
+
+.winner-btn-new {
+  background: linear-gradient(135deg, var(--rocketBlue), var(--rocketAlt));
+  color: white;
+  box-shadow: 0 4px 15px rgba(80, 62, 255, 0.3);
+}
+
+.winner-btn-new:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(80, 62, 255, 0.5);
+}
+
+.winner-btn-menu {
+  background: linear-gradient(135deg, var(--rocketPurple), var(--rocketDark));
+  color: white;
+  box-shadow: 0 4px 15px rgba(153, 0, 153, 0.3);
+}
+
+.winner-btn-menu:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(153, 0, 153, 0.5);
+}
+
+.winner-btn-see {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  color: #495057;
+  border: 2px solid #dee2e6;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.winner-btn-see:hover {
+  background: linear-gradient(135deg, #e9ecef, #dee2e6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Bingo Board */
+.bingo-board {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.bingo-cell {
+  aspect-ratio: 1;
+  background: white;
+  border: 3px solid #ddd;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 8px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.bingo-cell:hover {
+  transform: scale(1.05);
+  border-color: var(--rocketBlue);
+  box-shadow: 0 4px 12px rgba(80, 62, 255, 0.3);
+}
+
+.bingo-cell.marked {
+  background: linear-gradient(135deg, var(--rocketAlt), var(--rocketPurple));
+  border-color: var(--rocketBlue);
+  color: white;
+  position: relative;
+}
+
+.bingo-cell.marked.eggman-mode::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  height: 70%;
+  background-image: url('../../../assets/images/egg.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bingo-cell.free-space {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  border-color: #FF8C00;
+  color: white;
+  font-weight: 800;
+  cursor: default;
+  position: relative;
+  overflow: visible;
+}
+
+.bingo-cell.free-space.eggman-mode {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+}
+
+.bingo-cell.free-space.eggman-mode::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  height: 90%;
+  background-image: url('../../../assets/images/EggmanToken.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bingo-cell.free-space:hover {
+  transform: none;
+}
+
+.cell-text {
+  font-size: clamp(9px, 1.2vw, 13px);
+  text-align: center;
+  line-height: 1.3;
+  word-wrap: break-word;
+  hyphens: auto;
+  font-weight: 500;
+  position: relative;
+  z-index: 2;
+}
+
+.free-text {
+  font-size: 18px;
+  text-align: center;
+  line-height: 1.2;
+  position: relative;
+  z-index: 2;
+}
+
+.mark-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  color: white;
+  font-weight: bold;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  animation: markPop 0.3s ease-out;
+  z-index: 3;
+}
+
+@keyframes markPop {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Instructions */
+.bingo-instructions {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  border-left: 4px solid var(--rocketBlue);
+}
+
+.bingo-instructions p {
+  margin: 8px 0;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.bingo-instructions strong {
+  color: #333;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .bingo-mode-select h2 {
+    font-size: 26px;
+  }
+
+  .mode-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .mode-btn {
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .bingo-header-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .game-controls {
+    justify-content: center;
+  }
+
+  .bingo-board {
+    gap: 6px;
+    padding: 10px;
+  }
+
+  .cell-text {
+    font-size: clamp(8px, 2vw, 11px);
+  }
+
+  .free-text {
+    font-size: 14px;
+  }
+
+  .winner-banner {
+    font-size: 22px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .bingo-board {
+    gap: 4px;
+    padding: 8px;
+  }
+
+  .bingo-cell {
+    border-width: 2px;
+    border-radius: 8px;
+    padding: 4px;
+  }
+
+  .cell-text {
+    font-size: clamp(7px, 2.5vw, 10px);
+  }
+
+  .free-text {
+    font-size: 12px;
+  }
+
+  .mark-overlay {
+    font-size: 32px;
+  }
+
+  .winner-banner {
+    font-size: 18px;
+    padding: 15px;
+  }
+
+  .control-btn {
+    padding: 8px 15px;
+    font-size: 12px;
+  }
+
+  .bingo-instructions {
+    padding: 15px;
+  }
+
+  .bingo-instructions p {
+    font-size: 12px;
+  }
+}

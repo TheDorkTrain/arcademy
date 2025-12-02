@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate , Link  } from 'react-router-dom';
 import './Sudoku.css';
-import '../Hub.css';
+import '../../Hub.css';
 
 function Sudoku({ user, onLogout, token }) {
   const navigate = useNavigate();

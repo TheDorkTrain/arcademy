@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './Rocxs.css';
-import rocxsImg1 from './Images/rocx1.png';
-import rocxsImg2 from './Images/roxs2.png';
-import '../Hub.css';
+import rocxsImg1 from '../Images/rocx1.png';
+import rocxsImg2 from '../Images/roxs2.png';
+import '../../Hub.css';
 
 function Rocxs({ user, onLogout, token }) {
   const [showFirst, setShowFirst] = useState(true);

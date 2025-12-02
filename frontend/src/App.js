@@ -4,14 +4,15 @@ import './App.css';
 import Hub from './components/Hub';
 import Login from './components/Login';
 import Register from './components/Register';
-import Sudoku from './components/games/Sudoku';
-import RocketMans from './components/games/RocketMans';
-import DungeonCrawler from './components/games/DungeonCrawler';
-import PersonalityQuiz from './components/games/PersonalityQuiz';
-import WouldYouRather from './components/games/WouldYouRather';
-import CrabAttacks from './components/games/CrabAttacks';
-import Zork from './components/games/Zork'; 
-import Rocxs from './components/games/Rocxs';
+import Sudoku from './components/games/Sudoku/Sudoku';
+import RocketMans from './components/games/RocketMans/RocketMans';
+import DungeonCrawler from './components/games/DungeonCrawler/DungeonCrawler';
+import PersonalityQuiz from './components/games/PersonalityQuiz/PersonalityQuiz';
+import WouldYouRather from './components/games/WouldYouRather/WouldYouRather';
+import CrabAttacks from './components/games/CrabAttacks/CrabAttacks';
+import Zork from './components/games/Zork/Zork'; 
+import Rocxs from './components/games/Rocxs/Rocxs';
+import Bingo from './components/games/Bingo/Bingo';
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -77,6 +78,7 @@ function App() {
           <Route path="/game/zork" element={<Zork user={user} token={token} />} />
           <Route path="/game/rocxs" element={<Rocxs user={user} token={token} />} />
           <Route path="/game/crabAttacks" element={<CrabAttacks user={user} token={token} />} />
+          <Route path="/game/bingo" element={<Bingo user={user} token={token} onLogout={handleLogout} />} />
         </Routes>
       </div>
     </Router>
