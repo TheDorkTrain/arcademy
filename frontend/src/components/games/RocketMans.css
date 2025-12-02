@@ -1,7 +1,10 @@
 .rocket-game {
   position: relative;
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin: 20px auto;
+  max-width: 100%;
 }
 
 .game-canvas {
@@ -9,6 +12,9 @@
   border-radius: 10px;
   display: block;
   background: #1a1a2e;
+  max-width: 100%;
+  height: auto;
+  width: 100%;
 }
 
 .game-overlay {
@@ -71,3 +77,71 @@
   margin: 8px 0;
   font-size: 16px;
 }
+
+/* Responsive Design for RocketMans */
+@media screen and (max-width: 768px) {
+  .rocket-game {
+    margin: 10px auto;
+    width: 100%;
+  }
+
+  .game-canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100%;
+  }
+
+  .game-overlay h2 {
+    font-size: 28px;
+  }
+
+  .game-overlay p {
+    font-size: 16px;
+  }
+
+  .start-btn {
+    padding: 12px 30px;
+    font-size: 18px;
+  }
+
+  .game-content {
+    padding: 20px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .rocket-game {
+    margin: 5px auto;
+  }
+
+  .game-canvas {
+    max-width: 100%;
+    border-width: 2px;
+  }
+
+  .game-overlay h2 {
+    font-size: 24px;
+  }
+
+  .game-overlay p {
+    font-size: 14px;
+  }
+
+  .start-btn {
+    padding: 10px 25px;
+    font-size: 16px;
+  }
+
+  .game-instructions h3 {
+    font-size: 18px;
+  }
+
+  .game-instructions li {
+    font-size: 14px;
+  }
+
+  .game-content {
+    padding: 15px;
+  }
+}
+

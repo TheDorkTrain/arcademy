@@ -17,7 +17,9 @@
 
 .wyr-question {
   max-width: 800px;
+  width: 100%;
   margin: 0 auto;
+  padding-bottom: 40px;
 }
 
 .wyr-question h2 {
@@ -167,3 +169,96 @@
   font-size: 14px;
   color: #333;
 }
+
+/* Responsive Design for Would You Rather */
+@media screen and (max-width: 768px) {
+  .wyr-start h2,
+  .wyr-question h2 {
+    font-size: 28px;
+  }
+
+  .wyr-start p {
+    font-size: 16px;
+  }
+
+  .wyr-question {
+    padding: 15px;
+    padding-bottom: 30px;
+  }
+
+  .choice-btn {
+    padding: 20px;
+    max-width: 100%;
+  }
+
+  .choice-label {
+    font-size: 20px;
+    width: 45px;
+    height: 45px;
+  }
+
+  .choice-text {
+    font-size: 16px;
+  }
+
+  .or-divider {
+    font-size: 20px;
+  }
+
+  .game-content {
+    padding: 20px;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .wyr-start,
+  .wyr-question {
+    padding: 10px;
+    padding-bottom: 20px;
+  }
+
+  .wyr-start h2,
+  .wyr-question h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .wyr-start p {
+    font-size: 14px;
+  }
+
+  .choice-btn {
+    padding: 15px;
+    gap: 15px;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .choice-label {
+    font-size: 18px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .choice-text {
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .or-divider {
+    font-size: 18px;
+  }
+
+  .answer-item {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .game-content {
+    padding: 15px;
+    max-height: calc(100vh - 150px);
+  }
+}
+

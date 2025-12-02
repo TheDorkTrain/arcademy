@@ -3,7 +3,11 @@
   position: relative;
   background: #000;
   min-height: 100vh;
-  overflow: hidden;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .matrix-rain {
@@ -20,6 +24,12 @@
 .sudoku-content-wrapper {
   position: relative;
   z-index: 2;
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .matrix-title {
@@ -128,13 +138,13 @@
 }
 
 .sudoku-cell {
-  width: 50px;
-  height: 50px;
+  width: clamp(35px, 5vw, 50px);
+  height: clamp(35px, 5vw, 50px);
   border: 1px solid #ccc;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: clamp(18px, 3vw, 24px);
   font-weight: bold;
   cursor: pointer;
   transition: background 0.2s;
@@ -337,3 +347,71 @@
   font-size: 18px;
   text-shadow: 0 0 5px #0F0;
 }
+
+/* Responsive Design for Sudoku */
+@media screen and (max-width: 768px) {
+  .sudoku-content-wrapper {
+    padding: 15px;
+  }
+
+  .matrix-controls {
+    padding: 10px;
+  }
+
+  .game-info {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .sudoku-board {
+    max-width: 100%;
+    font-size: 16px;
+  }
+
+  .number-pad {
+    gap: 8px;
+  }
+
+  .matrix-num-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .sudoku-content-wrapper {
+    padding: 10px;
+  }
+
+  .matrix-title {
+    font-size: 24px;
+  }
+
+  .matrix-controls {
+    padding: 8px;
+  }
+
+  .sudoku-board {
+    font-size: 14px;
+  }
+
+  .number-pad {
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+
+  .matrix-num-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 16px;
+  }
+
+  .matrix-select,
+  .matrix-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
