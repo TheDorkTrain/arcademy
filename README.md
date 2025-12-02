@@ -1,141 +1,278 @@
 
 # Arcademy Hub
 
-A central hub for posting games and utils. 
+A central hub for playing mini-games with score tracking. Play multiple short games, register to save your scores, and compete with yourself!
+
+> **Quick Start for New Users:** Just run `.\start.ps1` (PowerShell) or `start.bat` (Command Prompt) and everything will be set up automatically! See the [Quick Start](#-quick-start-new-users) section below.
 
 ## Features
 
-- **Score Keeping** - Register to log scores on games that support it.
-- **Entertainment for Hour** - Multiple short games to keep entertainment for at least an hour.
+- **Score Keeping** - Register to log scores on games that support it
+- **8 Different Games** - Multiple genres to keep you entertained
+- **User Authentication** - Secure login and registration system
+- **AI-Powered Games** - Some games use OpenAI for dynamic content
 
-### Setup
-1. Clone or download this repository
-2. Navigate to the project directory:
+## Quick Start (New Users)
 
-3. (Optional) Create a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+### Prerequisites
+
+Before you begin, make sure you have these installed:
+
+1. **Node.js** (v18 or higher) - [Download here](https://nodejs.org/)
+2. **Python** (v3.8 or higher) - [Download here](https://www.python.org/)
+3. **Git** (optional) - For cloning the repository
+
+### Installation & Setup
+
+1. **Clone or download this repository**
+   ```powershell
+   git clone <repository-url>
+   cd arcademy
+   ```
+
+2. **Run the startup script**
+   
+   **PowerShell (Recommended):**
+   ```powershell
+   .\start.ps1
+   ```
+   
+   **Command Prompt/Batch (Alternative):**
+   ```cmd
+   start.bat
+   ```
+   
+   **Note:** If PowerShell gives an execution policy error, run:
+   ```powershell
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+   ```
+   
+   The startup script will automatically:
+   - ✅ Check that Node.js and Python are installed
+   - ✅ Create a Python virtual environment (if needed)
+   - ✅ Install all dependencies (npm packages and Python packages)
+   - ✅ Create a `.env` configuration file with defaults
+   - ✅ Initialize the database
+   - ✅ Start all backend and frontend servers
+
+3. **Open your browser**
+   
+   Once all servers are running, navigate to:
+   ```
+   http://localhost:3000
+   ```
+
+4. **Optional: Configure OpenAI API Key**
+   
+   If you want to play AI-powered games (like Zork), add your OpenAI API key:
+   - Open `backend/login/.env`
+   - Replace `your_openai_api_key_here` with your actual API key
+   - Get an API key at: https://platform.openai.com/api-keys
+   - Restart the servers
+
+That's it! You're ready to play! 
+
+> **New to the project?** Check out [GETTING_STARTED.md](GETTING_STARTED.md) for a more detailed beginner-friendly guide with troubleshooting tips!
+
+## How to Use (As a Player)
+
+1. **Open the game hub** at `http://localhost:3000`
+2. **Register an account** (or continue as a guest, but scores won't be saved)
+3. **Click on any game** from the hub to start playing
+4. **Your scores are automatically saved** when logged in
+5. **View your scores** in the left sidebar
+
+### Available Games
+
+- **Rocxs** - A Clicker
+- **Matrix Sudoku** - Hit puzzle game with a techy visual
+- **Zork Mini** - A text adventure in classic D&D style(requires OpenAI API key)
+- **RocketMans** - Flappybird ripoff
+- **Dungeon Crawler** - small dungeon crawler with limited features
+- **Athlete Personality Quiz** - Match your athlete type based on your answers
+- **Every Night the Crab Attacks** - A short survival game where a crab attacks at night
+- **Would You Rather** - A "this or that" question picker
+
+## Manual Setup (Alternative Method)
+
+If you prefer to set up manually or the automatic script doesn't work:
+
+1. **Create virtual environment**
+   ```powershell
+   python -m venv venv
+   venv\Scripts\activate
+   ```
+
+2. **Install dependencies**
+   ```powershell
+   npm run install
+   ```
+   This installs both backend (Python) and frontend (Node.js) dependencies.
+
+3. **Configure environment variables**
+   ```powershell
+   copy .env.example backend\login\.env
+   ```
+   Edit `backend/login/.env` and add your OpenAI API key if needed.
+
+4. **Start the application**
+   ```powershell
+   npm start
+   ```
+   This starts all servers concurrently (login API, game APIs, and React frontend).
+
+## Troubleshooting
+
+### Port Already in Use
+If you see "port already in use" errors:
+- Port 3000 (Frontend): Close any other React apps
+- Port 5000 (Backend): Close any other Flask apps
+- Use Task Manager to find and close the process using these ports
+
+### Database Issues
+If you encounter database errors:
+```powershell
+Remove-Item backend\login\instance\gamehub.db
 ```
+The database will be recreated on next startup.
 
-1. Install Dependencies
-```bash
+### Dependency Issues
+If packages fail to install:
+```powershell
+# Clear and reinstall
+Remove-Item -Recurse -Force node_modules, frontend\node_modules
 npm run install
 ```
 
-## How to Run
-
-Run the hub by using:
-```bash
-npm run start
+### Python Virtual Environment Issues
+If the virtual environment has issues:
+```powershell
+Remove-Item -Recurse -Force venv
+python -m venv venv
 ```
+Then run `.\start.ps1` again.
 
-## How to Use (Player)
-- Play Games in your local browser
-- Register locally to record your scores
-- Certain games require an OpenAPI Key set up in your .env file.
+## API Endpoints
 
-### Games
-- Rocxs - A Clicker
-- Matrix Soduku - Hit puzzle game with a techy visual
-- Zork Mini - A text adventure in classic D&D style
-- RocketMans- Flappybird ripoff
-- Dungeon Crawler - small dungeon crawler with limited features
-- Athlete Personality Quiz - Match your athlete type based on your answers
-- Every Night the Crab Attacks - A short survival game where a crab attacks at night
-- Would you Rather - A "this or that" question picker
+### Authentication & Scores
+- `POST /api/register` - Register a new user
+- `POST /api/login` - Login user  
+- `GET /api/user` - Get current user info (requires JWT token)
+- `GET /api/scores` - Get user's scores (requires JWT token)
+- `POST /api/scores` - Submit a new score (requires JWT token)
 
-## How to Use (Player)
+### Game APIs
+- Would You Rather API - Serves random questions
+- Crab Attacks Server - Hosts the Lua-based game
 
-1. **Start both servers** (backend and frontend)
-2. **Open your browser** to `http://localhost:3000`
-3. **Register an account** or continue as a guest
-4. **Click on any game** to start playing
-5. **Your scores will be saved** if you're logged in and displayed in the left sidebar
+## How to Add a New Game (For Developers)
 
-## How to Use (Adding a Game)
+When adding a game or utility, you'll need to modify several files:
 
-When adding a game or a utility there are a number of files you will have to touch
- - Add your react .js game file into the /frontend/src/components/games folder
-   - It is reccommended that you use the wrapper located in the /templates/ folder 
- - If your project has a backend add a folder into to the /backend/
-   - you will also need to add to the start command in the root package.json to add it to the start routine
- - Add any react dependencies to /frontend/package.json
- - Add any python dependencies to /backend/requirements.txt
- - Add routing for your app in the /frontend/src/App.js
- - Add a Hub Icon in the games array in /frontend/src/components/Hub.js
- - When the game is ready you can play it locally or request permission to push it as a release
- - When pushing to the collaborative github, you will be unable to push to main. Make a pullrequest from a branch named after the tool you wish to implement.
+1. **Add your game component**
+   - Create a React component in `/frontend/src/components/games/`
+   - Use the wrapper template in `/templates/` for consistency
+
+2. **Add backend (if needed)**
+   - Create a folder in `/backend/` for your game's API
+   - Update the `start` command in root `package.json` to include your server
+
+3. **Update dependencies**
+   - Add React dependencies to `/frontend/package.json`
+   - Add Python dependencies to `/backend/requirements.txt`
+
+4. **Configure routing**
+   - Add route in `/frontend/src/App.js`
+   - Add game icon to the games array in `/frontend/src/components/Hub.js`
+
+5. **Test locally and submit PR**
+   - Test your game locally
+   - Create a branch named after your game
+   - Submit a pull request (cannot push directly to main)
 
 ## Technologies Used
 
 ### Frontend
-- React 18
-- React Router for navigation
-- CSS for styling
-- Axios for API calls
+- **React 18** - UI framework
+- **React Router** - Client-side routing
+- **Axios** - HTTP requests
+- **CSS** - Styling
 
 ### Backend
-- Flask (Python web framework)
-- SQLAlchemy (Database ORM)
-- Flask-JWT-Extended (Authentication)
-- bcrypt (Password hashing)
-- SQLite (Database)
-- Love2d Framework for Lua
+- **Flask** - Python web framework
+- **SQLAlchemy** - Database ORM
+- **Flask-JWT-Extended** - JWT authentication
+- **Flask-CORS** - Cross-origin resource sharing
+- **bcrypt** - Password hashing
+- **SQLite** - Local database
+- **OpenAI API** - AI-powered game content
+- **Love2D** - Lua game framework (for Crab Attacks)
 
 ## Project Structure
 
 ```
-Arcademy/
+arcademy/
+├── start.ps1                   # Easy startup script (run this!)
+├── .env.example                # Environment variable template
+├── package.json                # Root dependencies & npm scripts
 ├── backend/
-│   ├── requirements.txt    # Python dependencies
-│   ├── login               # Backend for login and scores
-|   |
-|   |                        -Backends for Games that require them-
-│   └── would_you_rather_api         
-│   └── crabAttacks      
-│
-└── frontend/
-    ├── public/
-    │   └── index.html
-    ├── src/
-    |   |
-    │   ├── components/
-    │   ├── Hub.js           # Main game hub    
-    │   │   └── games/
-    |   |       |            - Game Files go here -
-    │   │       ├── Sudoku.js
-    │   │       ├── RocketMans.js
-    │   │       ├── DungeonCrawler.js
-    │   │       ├── PersonalityQuiz.js
-    │   │       └── WouldYouRather.js
-    │   ├── App.js          - Game Routing goes here-
-    │   ├── App.css
-    │   └── index.js
-    └── package.json
+│   ├── requirements.txt        # Python dependencies
+│   ├── login/
+│   │   ├── app.py              # Authentication & score API
+│   │   ├── .env                # Environment variables (create from .env.example)
+│   │   └── instance/
+│   │       └── gamehub.db      # SQLite database (auto-created)
+│   ├── would_you_rather_api/   # Would You Rather game backend
+│   └── crabAttacks/            # Crab Attacks game server
+├── frontend/
+│   ├── package.json            # Frontend dependencies
+│   ├── public/
+│   │   └── index.html
+│   └── src/
+│       ├── App.js              # Main app component & routing
+│       ├── components/
+│       │   ├── Hub.js          # Game selection hub
+│       │   ├── Login.js        # Login component
+│       │   ├── Register.js     # Registration component
+│       │   └── games/          # Individual game components
+│       │       ├── Sudoku.js
+│       │       ├── RocketMans.js
+│       │       ├── DungeonCrawler.js
+│       │       ├── PersonalityQuiz.js
+│       │       ├── WouldYouRather.js
+│       │       ├── CrabAttacks.js
+│       │       ├── Zork.js
+│       │       └── Rocxs.js
+│       └── utils/
+│           └── logger.js       # Logging utility
+├── docs/                       # Documentation files
+├── templates/                  # Game templates for developers
+└── tests/                      # Test files
 ```
 
-## Login API Endpoints
+## Important Notes
 
-- `POST /api/register` - Register a new user
-- `POST /api/login` - Login user
-- `GET /api/user` - Get current user info
-- `GET /api/scores` - Get user's scores
-- `POST /api/scores` - Submit a new score
-
-## Notes
-
-- The database is created automatically on first run
-- Scores are saved only for registered users
-- Guest users can play all games but scores won't be saved
-- The app uses JWT tokens for authentication
+- ✅ The database is created automatically on first run
+- ✅ Scores are saved only for registered users
+- ✅ Guest users can play all games but scores won't persist
+- ✅ JWT tokens are used for secure authentication
+- ⚠️ OpenAI API key is optional but required for Zork game
+- ⚠️ Default secrets in `.env` are fine for local development but **must be changed in production**
 
 ## Future Enhancements
 
-- Leaderboards for each game
-- Multiplayer support
-- More games
-- User profiles and avatars
-- Social features (friends, challenges)
+- [ ] Leaderboards for each game
+- [ ] Multiplayer support
+- [ ] Additional games
+- [ ] User profiles and avatars
+- [ ] Social features (friends, challenges)
+- [ ] Game achievements and badges
+- [ ] Mobile responsive design improvements
 
-Enjoy playing! 🎮
+## License
+
+See LICENSE file for details.
+
+---
+
+**Enjoy playing!** If you encounter any issues, check the Troubleshooting section above or open an issue on GitHub.
