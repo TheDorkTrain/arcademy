@@ -97,6 +97,13 @@ function Hub({ user, onLogout, token }) {
       type: 'game',
       description: 'Eggman Bingo & Custom Boards'
     },
+    {
+      name: 'Tetris',
+      path: '/game/tetris',
+      icon: '🧱',
+      type: 'game',
+      description: 'Classic block-stacking puzzle'
+    },
 
   ];
    const utils = [

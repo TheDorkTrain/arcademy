@@ -13,6 +13,7 @@ import CrabAttacks from './components/games/CrabAttacks/CrabAttacks';
 import Zork from './components/games/Zork/Zork'; 
 import Rocxs from './components/games/Rocxs/Rocxs';
 import Bingo from './components/games/Bingo/Bingo';
+import Tetris from './components/games/Tetris/Tetris';
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -79,6 +80,7 @@ function App() {
           <Route path="/game/rocxs" element={<Rocxs user={user} token={token} />} />
           <Route path="/game/crabAttacks" element={<CrabAttacks user={user} token={token} />} />
           <Route path="/game/bingo" element={<Bingo user={user} token={token} onLogout={handleLogout} />} />
+          <Route path="/game/tetris" element={<Tetris user={user} token={token} onLogout={handleLogout} />} />
         </Routes>
       </div>
     </Router>

@@ -1,0 +1,517 @@
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import io from 'socket.io-client';
+import './Tetris.css';
+import '../../Hub.css';
+
+const TETRIS_SERVER = 'http://localhost:5003';
+
+// Tetris piece colors - Pastel Beach Theme
+const COLORS = {
+  'I': '#8BCFE5',  // Bright turquoise/cyan
+  'O': '#FFB6C1',  // Soft pink
+  'T': '#FFC0CB',  // Light pink
+  'S': '#B0C4DE',  // Light steel blue
+  'Z': '#E6BE8A',  // Peach/sandy
+  'J': '#DDA0DD',  // Plum/lavender
+  'L': '#FFDE59'   // Soft yellow
+};
+
+const BLOCK_SIZE = 30;
+const BOARD_WIDTH = 10;
+const BOARD_HEIGHT = 20;
+
+function Tetris({ user, onLogout, token }) {
+  const [socket, setSocket] = useState(null);
+  const [gameState, setGameState] = useState(null);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [gameId] = useState(() => `game_${Date.now()}`);
+  const [isPaused, setIsPaused] = useState(false);
+  const [showGameOver, setShowGameOver] = useState(false);
+  const [initials, setInitials] = useState('');
+  const [highScores, setHighScores] = useState([]);
+  const [connected, setConnected] = useState(false);
+  const [connectionError, setConnectionError] = useState(false);
+  const canvasRef = useRef(null);
+
+  // Connect to WebSocket
+  useEffect(() => {
+    console.log('Attempting to connect to Tetris server at:', TETRIS_SERVER);
+    const newSocket = io(TETRIS_SERVER, {
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      timeout: 10000
+    });
+    
+    newSocket.on('connect', () => {
+      console.log('✅ Connected to Tetris server');
+      setConnected(true);
+      setConnectionError(false);
+    });
+
+    newSocket.on('connect_error', (error) => {
+      console.error('❌ Connection error:', error.message);
+      setConnectionError(true);
+      setConnected(false);
+    });
+
+    newSocket.on('disconnect', () => {
+      console.log('Disconnected from Tetris server');
+      setConnected(false);
+    });
+
+    newSocket.on('game_update', (state) => {
+      console.log('Game update received:', state);
+      setGameState(state);
+      if (state.game_over && !showGameOver) {
+        setShowGameOver(true);
+      }
+    });
+
+    newSocket.on('connected', (data) => {
+      console.log(data.message);
+    });
+
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+  // Fetch high scores
+  useEffect(() => {
+    fetchHighScores();
+  }, []);
+
+  const fetchHighScores = async () => {
+    try {
+      const response = await fetch(`${TETRIS_SERVER}/api/high_scores`);
+      const data = await response.json();
+      setHighScores(data.high_scores || []);
+    } catch (error) {
+      console.error('Error fetching high scores:', error);
+    }
+  };
+
+  // Start game
+  const startGame = () => {
+    if (socket) {
+      socket.emit('start_game', { game_id: gameId });
+      setGameStarted(true);
+      setShowGameOver(false);
+      setIsPaused(false);
+    }
+  };
+
+  // Reset game
+  const resetGame = () => {
+    if (socket) {
+      socket.emit('reset', { game_id: gameId });
+      setShowGameOver(false);
+      setGameStarted(true);
+      setIsPaused(false);
+    }
+  };
+
+  // Handle key presses
+  const handleKeyDown = useCallback((e) => {
+    if (!gameStarted || isPaused || showGameOver || !socket) return;
+
+    let action = null;
+    switch (e.key) {
+      case 'ArrowLeft':
+        action = 'left';
+        break;
+      case 'ArrowRight':
+        action = 'right';
+        break;
+      case 'ArrowDown':
+        action = 'down';
+        break;
+      case 'ArrowUp':
+        action = 'rotate';
+        break;
+      case 'Enter':
+        action = 'hard_drop';
+        break;
+      case 'c':
+      case 'C':
+        action = 'hold';
+        break;
+      case 'Escape':
+        setIsPaused(!isPaused);
+        return;
+      default:
+        return;
+    }
+
+    if (action) {
+      e.preventDefault();
+      socket.emit('move', { game_id: gameId, action });
+    }
+  }, [gameStarted, isPaused, showGameOver, socket, gameId]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
+  // Draw game board
+  useEffect(() => {
+    if (!canvasRef.current || !gameState) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const { board_with_piece, width, height } = gameState;
+
+    // Clear canvas with black background
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw grid with more visible lines
+    ctx.strokeStyle = '#333333';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= width; i++) {
+      ctx.beginPath();
+      ctx.moveTo(i * BLOCK_SIZE, 0);
+      ctx.lineTo(i * BLOCK_SIZE, height * BLOCK_SIZE);
+      ctx.stroke();
+    }
+    for (let i = 0; i <= height; i++) {
+      ctx.beginPath();
+      ctx.moveTo(0, i * BLOCK_SIZE);
+      ctx.lineTo(width * BLOCK_SIZE, i * BLOCK_SIZE);
+      ctx.stroke();
+    }
+
+    // Draw blocks
+    board_with_piece.forEach((row, y) => {
+      row.forEach((cell, x) => {
+        if (cell) {
+          ctx.fillStyle = COLORS[cell] || '#ffffff';
+          ctx.fillRect(
+            x * BLOCK_SIZE + 1,
+            y * BLOCK_SIZE + 1,
+            BLOCK_SIZE - 2,
+            BLOCK_SIZE - 2
+          );
+          // Add subtle border
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(
+            x * BLOCK_SIZE + 1,
+            y * BLOCK_SIZE + 1,
+            BLOCK_SIZE - 2,
+            BLOCK_SIZE - 2
+          );
+        }
+      });
+    });
+  }, [gameState]);
+
+  // Submit high score
+  const submitScore = async () => {
+    if (initials.length !== 3) {
+      alert('Please enter exactly 3 initials');
+      return;
+    }
+
+    try {
+      await fetch(`${TETRIS_SERVER}/api/high_scores`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          initials: initials.toUpperCase(),
+          score: gameState.score
+        })
+      });
+      fetchHighScores();
+      setInitials('');
+      setShowGameOver(false);
+    } catch (error) {
+      console.error('Error submitting score:', error);
+    }
+  };
+
+  // Draw piece preview on canvas
+  const drawPiecePreview = (piece, canvasRef) => {
+    if (!piece || !canvasRef.current) return;
+    
+    const shapes = {
+      'I': [[1, 1, 1, 1]],
+      'O': [[1, 1], [1, 1]],
+      'T': [[0, 1, 0], [1, 1, 1]],
+      'S': [[0, 1, 1], [1, 1, 0]],
+      'Z': [[1, 1, 0], [0, 1, 1]],
+      'J': [[1, 0, 0], [1, 1, 1]],
+      'L': [[0, 0, 1], [1, 1, 1]]
+    };
+    
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const shape = shapes[piece];
+    const blockSize = 25;
+    
+    // Clear canvas with black background
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw piece
+    shape.forEach((row, y) => {
+      row.forEach((cell, x) => {
+        if (cell) {
+          ctx.fillStyle = COLORS[piece];
+          ctx.fillRect(
+            x * blockSize + 15,
+            y * blockSize + 15,
+            blockSize - 2,
+            blockSize - 2
+          );
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(
+            x * blockSize + 10,
+            y * blockSize + 10,
+            blockSize - 2,
+            blockSize - 2
+          );
+        }
+      });
+    });
+  };
+
+  const nextPieceCanvasRef = useRef(null);
+  const holdPieceCanvasRef = useRef(null);
+
+  useEffect(() => {
+    if (gameState && nextPieceCanvasRef.current) {
+      drawPiecePreview(gameState.next_piece, nextPieceCanvasRef);
+    }
+  }, [gameState?.next_piece]);
+
+  useEffect(() => {
+    if (gameState && holdPieceCanvasRef.current) {
+      drawPiecePreview(gameState.hold_piece, holdPieceCanvasRef);
+    }
+  }, [gameState?.hold_piece]);
+
+  return (
+    <div className="hub-container">
+      <div className="sidebar">
+        <div>
+          <h1>🧱 Tetris</h1>
+          <h2>inspired by Janniebeth</h2>
+          <p>Clear lines to score!</p>
+        </div>
+
+        {user ? (
+          <div className="user-info">
+            <p>Welcome, {user.username}!</p>
+            <button className="logout-btn" onClick={onLogout}>Logout</button>
+          </div>
+        ) : (
+          <div className="user-info">
+            <p>Welcome, Guest!</p>
+            <Link to="/login">
+              <button className="logout-btn">Login</button>
+            </Link>
+            {' '}
+            <Link to="/register">
+              <button className="logout-btn">Register</button>
+            </Link>
+          </div>
+        )}
+        
+        <div>
+          <Link to="/">
+            <button className="logout-btn">Back to Hub</button>
+          </Link>
+        </div>
+      </div>
+
+      <div className="main-content">
+        <div className="game-container">
+          <div className="game-header">
+            <h1>🎮 Tetris</h1>
+          </div>
+
+          <div className="game-content tetris-content">
+            {!gameStarted ? (
+              <div className="tetris-start-screen">
+                <h2>Welcome to Tetris!</h2>
+                {connectionError && (
+                  <div style={{
+                    background: 'rgba(255, 0, 0, 0.2)',
+                    border: '2px solid #ff4444',
+                    padding: '15px',
+                    borderRadius: '8px',
+                    marginBottom: '20px',
+                    color: '#fff'
+                  }}>
+                    <p><strong>⚠️ Server Connection Error</strong></p>
+                    <p>Unable to connect to the Tetris game server.</p>
+                    <p style={{ fontSize: '12px', marginTop: '10px' }}>
+                      Make sure the backend server is running on port 5003.
+                    </p>
+                  </div>
+                )}
+                {connected && !connectionError && (
+                  <div style={{
+                    background: 'rgba(0, 255, 0, 0.1)',
+                    border: '2px solid #44ff44',
+                    padding: '10px',
+                    borderRadius: '8px',
+                    marginBottom: '20px',
+                    color: '#4f4'
+                  }}>
+                    ✅ Connected to server
+                  </div>
+                )}
+                <button 
+                  className="tetris-start-btn" 
+                  onClick={startGame}
+                  disabled={!connected}
+                  style={{
+                    opacity: connected ? 1 : 0.5,
+                    cursor: connected ? 'pointer' : 'not-allowed'
+                  }}
+                >
+                  Start Game
+                </button>
+                <div className="tetris-controls">
+                  <h3>Controls:</h3>
+                  <p>← → : Move Left/Right</p>
+                  <p>↑ : Rotate</p>
+                  <p>↓ : Soft Drop</p>
+                  <p>Enter : Hard Drop</p>
+                  <p>C : Hold Piece</p>
+                  <p>Esc : Pause</p>
+                </div>
+                {highScores.length > 0 && (
+                  <div className="tetris-high-scores-preview">
+                    <h3>🏆 Top Scores</h3>
+                    <ol>
+                      {highScores.slice(0, 5).map((score, idx) => (
+                        <li key={idx}>
+                          {score.initials}: {score.score.toLocaleString()}
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="tetris-game-area">
+                <div className="tetris-left-panel">
+                  <div className="tetris-panel tetris-hold-panel">
+                    <h3>HOLD</h3>
+                    <canvas 
+                      ref={holdPieceCanvasRef} 
+                      width={130} 
+                      height={100}
+                      className="tetris-preview-canvas"
+                    />
+                  </div>
+                  <div className="tetris-panel tetris-controls-panel">
+                    <h3>CONTROLS</h3>
+                    <div className="tetris-controls-list">
+                      <p><strong>LEFT:</strong> Left</p>
+                      <p><strong>RIGHT:</strong> Right</p>
+                      <p><strong>DOWN:</strong> Down</p>
+                      <p><strong>UP:</strong> Rotate</p>
+                      <p><strong>RETURN:</strong> Drop</p>
+                      <p><strong>C:</strong> Hold</p>
+                      <p><strong>ESCAPE:</strong> Pause</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="tetris-center">
+                  <canvas
+                    ref={canvasRef}
+                    width={BOARD_WIDTH * BLOCK_SIZE}
+                    height={BOARD_HEIGHT * BLOCK_SIZE}
+                    className="tetris-canvas"
+                  />
+                  
+                  {isPaused && (
+                    <div className="tetris-overlay">
+                      <div className="tetris-pause-menu">
+                        <h2>Paused</h2>
+                        <button onClick={() => setIsPaused(false)}>Resume</button>
+                        <button onClick={() => {
+                          setGameStarted(false);
+                          setIsPaused(false);
+                        }}>Main Menu</button>
+                      </div>
+                    </div>
+                  )}
+
+                  {showGameOver && gameState && (
+                    <div className="tetris-overlay">
+                      <div className="tetris-game-over">
+                        <h2>Game Over!</h2>
+                        <p>Final Score: {gameState.score.toLocaleString()}</p>
+                        <p>Level: {gameState.level}</p>
+                        <p>Lines: {gameState.lines_cleared}</p>
+                        
+                        <div className="tetris-initials-input">
+                          <label>Enter Initials:</label>
+                          <input
+                            type="text"
+                            maxLength="3"
+                            value={initials}
+                            onChange={(e) => setInitials(e.target.value.toUpperCase())}
+                            placeholder="ABC"
+                          />
+                          <button onClick={submitScore}>Submit Score</button>
+                        </div>
+                        
+                        <div className="tetris-game-over-buttons">
+                          <button onClick={resetGame}>Play Again</button>
+                          <button onClick={() => {
+                            setGameStarted(false);
+                            setShowGameOver(false);
+                          }}>Main Menu</button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="tetris-right-panel">
+                  <div className="tetris-panel tetris-next-panel">
+                    <h3>NEXT</h3>
+                    <canvas 
+                      ref={nextPieceCanvasRef} 
+                      width={130} 
+                      height={100}
+                      className="tetris-preview-canvas"
+                    />
+                  </div>
+                  
+                  {gameState && (
+                    <div className="tetris-panel tetris-stats-panel">
+                      <h3>SCORE</h3>
+                      <p className="tetris-stat-value">{gameState.score.toLocaleString()}</p>
+                      
+                      <h3>LEVEL</h3>
+                      <p className="tetris-stat-value">{gameState.level}</p>
+                      
+                      <h3>LINES</h3>
+                      <p className="tetris-stat-value">{gameState.lines_cleared}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Tetris;
