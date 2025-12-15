@@ -1,0 +1,350 @@
+/* Solitaire Game Styles */
+
+.solitaire-container {
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 50%, #2d5016 100%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.solitaire-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+}
+
+.solitaire-stats {
+  display: flex;
+  gap: 30px;
+  font-size: 16px;
+}
+
+.solitaire-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.solitaire-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.solitaire-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.solitaire-game-area {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.solitaire-top-area {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.solitaire-stock-waste {
+  display: flex;
+  gap: 20px;
+}
+
+.solitaire-foundations {
+  display: flex;
+  gap: 10px;
+}
+
+.solitaire-tableau {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+}
+
+.solitaire-pile {
+  position: relative;
+  min-height: 140px;
+}
+
+.solitaire-card {
+  width: 100px;
+  height: 140px;
+  background: white;
+  border: 2px solid #333;
+  border-radius: 8px;
+  position: absolute;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s, box-shadow 0.1s;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.solitaire-card:hover:not(.face-down) {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.solitaire-card.face-down {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #1e3a8a 100%);
+  cursor: default;
+  pointer-events: none;
+}
+
+.solitaire-card.face-down:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.solitaire-card.selected {
+  border-color: #fbbf24;
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.6);
+}
+
+.solitaire-card.dragging {
+  opacity: 0.6;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.card-rank {
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.card-suit {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.card-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-center .card-suit {
+  font-size: 48px;
+}
+
+.card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  transform: rotate(180deg);
+}
+
+.red {
+  color: #dc2626;
+}
+
+.black {
+  color: #000;
+}
+
+.solitaire-empty-slot {
+  width: 100px;
+  height: 140px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.solitaire-empty-slot.foundation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.solitaire-stock {
+  width: 100px;
+  height: 140px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.solitaire-stock:hover {
+  background: rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.solitaire-stock.empty {
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.3);
+  cursor: default;
+}
+
+.solitaire-stock.empty:hover {
+  transform: none;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Difficulty Modal */
+.difficulty-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.difficulty-content {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  text-align: center;
+  max-width: 500px;
+}
+
+.difficulty-content h2 {
+  font-size: 32px;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.difficulty-options {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.difficulty-option {
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  color: white;
+  border: none;
+  padding: 30px 40px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.difficulty-option:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+}
+
+.difficulty-option.easy {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+}
+
+.difficulty-option.medium {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.difficulty-option.hard {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.difficulty-info {
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* Win Modal */
+.win-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.win-content {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  text-align: center;
+  max-width: 400px;
+}
+
+.win-content h2 {
+  font-size: 36px;
+  color: #22c55e;
+  margin-bottom: 20px;
+}
+
+.win-stats {
+  margin: 20px 0;
+  font-size: 18px;
+  color: #666;
+}
+
+.win-stats p {
+  margin: 10px 0;
+}
+
+.win-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.win-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.win-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}

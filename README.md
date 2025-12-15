@@ -92,6 +92,8 @@ That's it! You're ready to play!
 - **Athlete Personality Quiz** - Match your athlete type based on your answers
 - **Every Night the Crab Attacks** - A short survival game where a crab attacks at night
 - **Would You Rather** - A "this or that" question picker
+- **Tetris** - 
+- **Solitaire** - 
 
 ## Manual Setup (Alternative Method)
 
