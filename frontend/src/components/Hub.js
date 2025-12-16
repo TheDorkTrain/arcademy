@@ -104,6 +104,13 @@ function Hub({ user, onLogout, token }) {
       type: 'game',
       description: 'Classic block-stacking puzzle'
     },
+    {
+      name: 'Solitaire',
+      path: '/game/solitaire',
+      icon: '🃏',
+      type: 'game',
+      description: 'Classic card game with 3 difficulties'
+    },
 
   ];
    const utils = [
