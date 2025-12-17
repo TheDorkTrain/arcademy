@@ -1,0 +1,192 @@
+.guess-who-game {
+  display: flex;
+  gap: 2rem;
+  padding: 1rem;
+  height: 100%;
+}
+
+.guess-who-cards {
+  flex: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.guess-who-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 3px solid transparent;
+  border-radius: 10px;
+  padding: 0.5rem;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.guess-who-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-color: #4CAF50;
+}
+
+.guess-who-card.flipped {
+  background-color: #8B00FF;
+  border-color: #8B00FF;
+}
+
+.guess-who-card.flipped img,
+.guess-who-card.flipped p {
+  opacity: 0.2;
+}
+
+.guess-who-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+  margin-bottom: 0.5rem;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.guess-who-name {
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin: 0;
+  color: #333;
+}
+
+.guess-who-card.flipped .guess-who-name {
+  color: white;
+}
+
+.hints {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.questions{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.hints h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  border-bottom: 2px solid #4CAF50;
+  padding-bottom: 0.5rem;
+}
+
+.hints button {
+  padding: 0.75rem;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.3s ease;
+}
+
+.hints button:hover {
+  background: #45a049;
+}
+
+.hints input {
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.hints input:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+/* Hint answer display */
+.hints > div {
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 5px;
+  border-left: 4px solid #4CAF50;
+}
+
+.hints > div p {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+/* Start/End game screens */
+.guess-who-start,
+.guess-who-end {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 2rem;
+}
+
+.start-btn {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.start-btn:hover {
+  transform: scale(1.05);
+  background: #45a049;
+}
+
+/* Scrollbar styling */
+.guess-who-cards::-webkit-scrollbar,
+.hints::-webkit-scrollbar {
+  width: 8px;
+}
+
+.guess-who-cards::-webkit-scrollbar-track,
+.hints::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.guess-who-cards::-webkit-scrollbar-thumb,
+.hints::-webkit-scrollbar-thumb {
+  background: #4CAF50;
+  border-radius: 10px;
+}
+
+.guess-who-cards::-webkit-scrollbar-thumb:hover,
+.hints::-webkit-scrollbar-thumb:hover {
+  background: #45a049;
+}
