@@ -6,7 +6,7 @@ function Hub({ user, onLogout, token }) {
   const [scores, setScores] = useState([]);
   const [showAd, setShowAd] = useState(true);
   const navigate = useNavigate();
-  const [activeGrid, setActiveGrid] = useState("games");
+  const [gameCategory, setGameCategory] = useState("singleplayer");
   const handleCloseAd = () => {
     setShowAd(false);
   };
@@ -39,6 +39,7 @@ function Hub({ user, onLogout, token }) {
       path: '/game/rocxs',
       icon: '🪨',
       type: 'game',
+      category: 'singleplayer',
       description: 'The ultimate ROCXS challenge!'
     },
     {
@@ -46,6 +47,7 @@ function Hub({ user, onLogout, token }) {
       path: '/game/sudoku',
       icon: '⚡',
       type: 'game',
+      category: 'singleplayer',
       description: 'Classic number puzzle game'
     },
     {
@@ -53,6 +55,7 @@ function Hub({ user, onLogout, token }) {
       path: '/game/zork',
       icon: '📜',
       type: 'openAI',
+      category: 'singleplayer',
       description: 'Text adventure in classic D&D style'
     },
     {
@@ -60,6 +63,7 @@ function Hub({ user, onLogout, token }) {
       path: '/game/rocketmans',
       icon: '🚀',
       type: 'game',
+      category: 'singleplayer',
       description: 'Navigate your rocket through space'
     },
     {
@@ -67,6 +71,7 @@ function Hub({ user, onLogout, token }) {
       path: '/game/dungeon',
       icon: '⚔️',
       type: 'game',
+      category: 'singleplayer',
       description: 'Explore dungeons and fight monsters'
     },
     {
@@ -74,6 +79,7 @@ function Hub({ user, onLogout, token }) {
       path: '/game/personality-quiz',
       icon: '🏃‍♂️',
       type: 'game',
+      category: 'singleplayer',
       description: 'Discover your athletic personality'
     },
       {
@@ -81,6 +87,7 @@ function Hub({ user, onLogout, token }) {
       path: '/game/crabAttacks',
       icon: '🦀',
       type: 'game',
+      category: 'singleplayer',
       description: 'Try and escape the island before the crab gets you.'
     },
     {
@@ -88,6 +95,7 @@ function Hub({ user, onLogout, token }) {
       path: '/game/would-you-rather',
       icon: '🤔',
       type: 'game',
+      category: 'singleplayer',
       description: 'Make tough choices'
     },
     {
@@ -95,6 +103,7 @@ function Hub({ user, onLogout, token }) {
       path: '/game/bingo',
       icon: '🎲',
       type: 'game',
+      category: 'singleplayer',
       description: 'Eggman Bingo & Custom Boards'
     },
     {
@@ -102,6 +111,7 @@ function Hub({ user, onLogout, token }) {
       path: '/game/tetris',
       icon: '🧱',
       type: 'game',
+      category: 'singleplayer',
       description: 'Classic block-stacking puzzle'
     },
     {
@@ -109,6 +119,7 @@ function Hub({ user, onLogout, token }) {
       path: '/game/solitaire',
       icon: '🃏',
       type: 'game',
+      category: 'singleplayer',
       description: 'Classic card game with 3 difficulties'
     },
      {
@@ -118,16 +129,15 @@ function Hub({ user, onLogout, token }) {
       type: 'game',
       description: 'Guess Who with the Next Gen'
     },
+    {
+      name: 'DOS',
+      path: '/game/dos',
+      icon: '🎴',
+      type: 'game',
+      category: 'multiplayer',
+      description: 'Multiplayer card game - Up to 8 players!'
+    },
 
-  ];
-   const utils = [
-    // {
-    //   name: 'ROCXS',
-    //   path: '/game/rocxs',
-    //   icon: '🪨',
-    //   type: 'game',
-    //   description: 'The ultimate ROCXS challenge!'
-    // },
   ];
 
 
@@ -186,7 +196,7 @@ function Hub({ user, onLogout, token }) {
         <div className="hub-header">
           <div className="hubTitle">
           <h1> NextGen Arcademy</h1>
-          <h2> Collection of Games, Utils</h2>
+          <h2> Collection of Games</h2>
           </div>
               <div className="hubKey" >
             <div>
@@ -214,12 +224,12 @@ function Hub({ user, onLogout, token }) {
 
           <div className ="appBox">
             <nav className ="appNav">
-              <h1 className = "gamesBox"  onClick={() => setActiveGrid("games")}>Games</h1>
-              <h1 className = "utilsBox" onClick={() => setActiveGrid("utils")}>Utils</h1>
+              <h1 className = "gamesBox"  onClick={() => setGameCategory("singleplayer")}>Singleplayer</h1>
+              <h1 className = "utilsBox" onClick={() => setGameCategory("multiplayer")}>Multiplayer</h1>
             </nav>
-            {activeGrid === "games" && (
-            <div className="games-grid" style={{ backgroundColor: "var(--rocketBlue)"}}>
-          {games.map((game, index) => (
+            <>
+                <div className="games-grid" style={{ backgroundColor: "var(--rocketBlue)"}}>
+          {games.filter(game => game.category === gameCategory).map((game, index) => (
             <div
             key={index}
             className="game-card"
@@ -233,25 +243,8 @@ function Hub({ user, onLogout, token }) {
               <p>{game.description}</p>
             </div>
           ))}
-        </div>)}
-     {activeGrid === "utils" && (
-            <div className="games-grid" style={{ backgroundColor: "var(--rocketDark)"}}>
-          {utils.map((utils, index) => (
-            <div
-            key={index}
-            className="utils-card"
-            onClick={() => navigate(utils.path)}
-             style={{ backgroundColor: 
-             utils.type === "game" ? "var(--rocketAlt)" :
-                       utils.type === "download" ? "var(--rocketLight)" :
-              utils.type === "openAI" ? "var(--rocketPurple)" : "white" }} 
-            >
-              <div className="game-icon">{utils.icon}</div>
-              <h2>{utils.name}</h2>
-              <p>{utils.description}</p>
-            </div>
-          ))}
-        </div>)}
+        </div>
+        </>
         
           </div>
       </div>
