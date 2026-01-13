@@ -8,9 +8,10 @@ A central hub for playing mini-games with score tracking. Play multiple short ga
 ## Features
 
 - **Score Keeping** - Register to log scores on games that support it
-- **8 Different Games** - Multiple genres to keep you entertained
+- **12 Different Games** - Multiple genres to keep you entertained
 - **User Authentication** - Secure login and registration system
 - **AI-Powered Games** - Some games use OpenAI for dynamic content
+- **Multiplayer Games** - Play DOS and Guess Who with friends on your local network
 
 ## Quick Start (New Users)
 
@@ -84,16 +85,21 @@ That's it! You're ready to play!
 
 ### Available Games
 
+**Singleplayer Games:**
 - **Rocxs** - A Clicker
 - **Matrix Sudoku** - Hit puzzle game with a techy visual
-- **Zork Mini** - A text adventure in classic D&D style(requires OpenAI API key)
+- **Zork Mini** - A text adventure in classic D&D style (requires OpenAI API key)
 - **RocketMans** - Flappybird ripoff
-- **Dungeon Crawler** - small dungeon crawler with limited features
+- **Dungeon Crawler** - Small dungeon crawler with limited features
 - **Athlete Personality Quiz** - Match your athlete type based on your answers
 - **Every Night the Crab Attacks** - A short survival game where a crab attacks at night
 - **Would You Rather** - A "this or that" question picker
-- **Tetris** - 
-- **Solitaire** - 
+- **Tetris** - Classic block-stacking puzzle game
+- **Solitaire** - Traditional card game
+
+**Multiplayer Games:**
+- **DOS** - Multiplayer UNO-style card game (up to 8 players)
+- **Guess Who** - Classic character guessing game for 2 players 
 
 ## Manual Setup (Alternative Method)
 
@@ -204,6 +210,7 @@ When adding a game or utility, you'll need to modify several files:
 
 ### Backend
 - **Flask** - Python web framework
+- **Flask-SocketIO** - WebSocket support for multiplayer games
 - **SQLAlchemy** - Database ORM
 - **Flask-JWT-Extended** - JWT authentication
 - **Flask-CORS** - Cross-origin resource sharing
@@ -227,7 +234,10 @@ arcademy/
 │   │   └── instance/
 │   │       └── gamehub.db      # SQLite database (auto-created)
 │   ├── would_you_rather_api/   # Would You Rather game backend
-│   └── crabAttacks/            # Crab Attacks game server
+│   ├── crabAttacks/            # Crab Attacks game server
+│   ├── dos/                    # DOS multiplayer card game server
+│   ├── guesswho/               # Guess Who multiplayer game server
+│   └── tetris/                 # Tetris game backend
 ├── frontend/
 │   ├── package.json            # Frontend dependencies
 │   ├── public/
@@ -246,7 +256,11 @@ arcademy/
 │       │       ├── WouldYouRather.js
 │       │       ├── CrabAttacks.js
 │       │       ├── Zork.js
-│       │       └── Rocxs.js
+│       │       ├── Rocxs.js
+│       │       ├── Tetris.js
+│       │       ├── Solitaire.js
+│       │       ├── Dos/            # DOS multiplayer card game
+│       │       └── GuessWho/       # Guess Who multiplayer game
 │       └── utils/
 │           └── logger.js       # Logging utility
 ├── docs/                       # Documentation files
@@ -266,12 +280,13 @@ arcademy/
 ## Future Enhancements
 
 - [ ] Leaderboards for each game
-- [ ] Multiplayer support
+- [x] Multiplayer support (DOS and Guess Who implemented)
 - [ ] Additional games
 - [ ] User profiles and avatars
 - [ ] Social features (friends, challenges)
 - [ ] Game achievements and badges
 - [ ] Mobile responsive design improvements
+- [ ] Online multiplayer (currently local network only)
 
 ## License
 
