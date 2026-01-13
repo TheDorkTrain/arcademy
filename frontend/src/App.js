@@ -15,6 +15,7 @@ import Rocxs from './components/games/Rocxs/Rocxs';
 import Bingo from './components/games/Bingo/Bingo';
 import Tetris from './components/games/Tetris/Tetris';
 import Solitaire from './components/games/Solitaire/Solitaire';
+import Dos from './components/games/Dos/Dos';
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -83,6 +84,8 @@ function App() {
           <Route path="/game/bingo" element={<Bingo user={user} token={token} onLogout={handleLogout} />} />
           <Route path="/game/tetris" element={<Tetris user={user} token={token} onLogout={handleLogout} />} />
           <Route path="/game/solitaire" element={<Solitaire user={user} token={token} onLogout={handleLogout} />} />
+          <Route path="/game/dos" element={<Dos user={user} token={token} onLogout={handleLogout} />} />
+          <Route path="/game/dos/:roomId" element={<Dos user={user} token={token} onLogout={handleLogout} />} />
         </Routes>
       </div>
     </Router>

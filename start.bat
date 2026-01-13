@@ -128,6 +128,7 @@ echo The following services will start:
 echo   - Login/Score Backend    ^(Flask, port 5000^)
 echo   - Would You Rather API   ^(Flask^)
 echo   - Crab Attacks Server    ^(Flask^)
+echo   - DOS Multiplayer Server ^(Flask-SocketIO, port 5004^)
 echo   - React Frontend         ^(port 3000^)
 echo.
 echo Once started, open your browser to: http://localhost:3000
