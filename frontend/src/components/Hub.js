@@ -122,6 +122,13 @@ function Hub({ user, onLogout, token }) {
       category: 'singleplayer',
       description: 'Classic card game with 3 difficulties'
     },
+     {
+      name: 'Guess Who',
+      path: '/game/guess-who',
+      icon: '🕵️‍♂️',
+      type: 'game',
+      description: 'Guess Who with the Next Gen'
+    },
     {
       name: 'DOS',
       path: '/game/dos',
