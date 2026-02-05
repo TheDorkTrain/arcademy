@@ -127,6 +127,7 @@ function Hub({ user, onLogout, token }) {
       path: '/game/guess-who',
       icon: '🕵️‍♂️',
       type: 'game',
+      category: 'singleplayer',
       description: 'Guess Who with the Next Gen'
     },
     {
@@ -136,6 +137,14 @@ function Hub({ user, onLogout, token }) {
       type: 'game',
       category: 'multiplayer',
       description: 'Multiplayer card game - Up to 8 players!'
+    },
+        {
+      name: 'LogMan',
+      path: '/game/logman',
+      icon: '🪵',
+      type: 'download',
+      category: 'multiplayer',
+      description: 'Play Hangman on the Mainframe'
     },
 
   ];
