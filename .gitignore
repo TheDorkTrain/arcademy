@@ -72,3 +72,7 @@ Thumbs.db
 node_modules/
 .env
 gamehub.db
+start.bat
+start.ps1
+package.json
+package-lock.json
