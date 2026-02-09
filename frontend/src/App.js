@@ -17,6 +17,7 @@ import Tetris from './components/games/Tetris/Tetris';
 import Solitaire from './components/games/Solitaire/Solitaire';
 import GuessWho from './components/games/GuessWho/GuessWho';
 import Dos from './components/games/Dos/Dos';
+import Paintball from './components/games/Paintball/Paintball';
 import LogMan from './components/games/LogMan/LogMan';
 
 function App() {
@@ -89,6 +90,8 @@ function App() {
           <Route path="/game/guess-who" element={<GuessWho user={user} token={token} onLogout={handleLogout} />} />
           <Route path="/game/dos" element={<Dos user={user} token={token} onLogout={handleLogout} />} />
           <Route path="/game/dos/:roomId" element={<Dos user={user} token={token} onLogout={handleLogout} />} />
+          <Route path="/game/paintball" element={<Paintball user={user} token={token} onLogout={handleLogout} />} />
+          <Route path="/game/paintball/:roomId" element={<Paintball user={user} token={token} onLogout={handleLogout} />} />
           <Route path="/game/logman" element={<LogMan user={user} token={token} onLogout={handleLogout} />} />
         </Routes>
       </div>

@@ -129,6 +129,7 @@ echo   - Login/Score Backend    ^(Flask, port 5000^)
 echo   - Would You Rather API   ^(Flask^)
 echo   - Crab Attacks Server    ^(Flask^)
 echo   - DOS Multiplayer Server ^(Flask-SocketIO, port 5004^)
+echo   - Paintball Server       ^(Flask-SocketIO, port 5006^)
 echo   - React Frontend         ^(port 3000^)
 echo.
 echo Once started, open your browser to: http://localhost:3000

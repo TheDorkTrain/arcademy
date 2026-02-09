@@ -330,4 +330,4 @@ def handle_challenge_dos(data):
         emit('error', {'message': result.get('message', 'Challenge failed')})
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5004, debug=True)
+    socketio.run(app, host='0.0.0.0', port=5004, debug=True, allow_unsafe_werkzeug=True)

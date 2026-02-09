@@ -138,6 +138,14 @@ function Hub({ user, onLogout, token }) {
       category: 'multiplayer',
       description: 'Multiplayer card game - Up to 8 players!'
     },
+    {
+      name: 'Paintball',
+      path: '/game/paintball',
+      icon: '🎯',
+      type: 'game',
+      category: 'multiplayer',
+      description: 'Top-down paintball battle - Up to 8 players!'
+    },
         {
       name: 'LogMan',
       path: '/game/logman',
