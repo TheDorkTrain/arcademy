@@ -3,6 +3,7 @@
   "name": "Sunset Arena",
   "width": 1100,
   "height": 700,
+  "background_color": "#1a2332",
   "spawn_points": [
     {"x": 100, "y": 100},
     {"x": 1000, "y": 100},
@@ -12,5 +13,12 @@
     {"x": 550, "y": 600},
     {"x": 100, "y": 350},
     {"x": 1000, "y": 350}
+  ],
+  "obstacles": [
+    {"type": "rect", "x": 300, "y": 250, "width": 80, "height": 200, "color": "#2f4c6b"},
+    {"type": "rect", "x": 720, "y": 250, "width": 80, "height": 200, "color": "#2f4c6b"},
+    {"type": "circle", "x": 550, "y": 350, "radius": 60, "color": "#3a5f8a"},
+    {"type": "rect", "x": 450, "y": 100, "width": 200, "height": 60, "color": "#2f4c6b"},
+    {"type": "rect", "x": 450, "y": 540, "width": 200, "height": 60, "color": "#2f4c6b"}
   ]
 }

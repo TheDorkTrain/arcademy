@@ -41,6 +41,29 @@ function Paintball({ user, onLogout }) {
   const [roundResult, setRoundResult] = useState(null);
   const [matchResult, setMatchResult] = useState(null);
   const [socketId, setSocketId] = useState(null);
+  const [characterImages, setCharacterImages] = useState({});
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [roundTransition, setRoundTransition] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(1.0);
+
+  // Load character images
+  useEffect(() => {
+    const loadImages = async () => {
+      const images = {};
+      for (const char of CHARACTER_CARDS) {
+        const img = new Image();
+        img.src = char.sprite;
+        await new Promise((resolve) => {
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+        images[char.id] = img;
+      }
+      setCharacterImages(images);
+      setImagesLoaded(true);
+    };
+    loadImages();
+  }, []);
 
   const mergeMaps = useCallback((serverMaps) => {
     if (!serverMaps || serverMaps.length === 0) {
@@ -75,9 +98,10 @@ function Paintball({ user, onLogout }) {
   setMaps(mergeMaps(data.maps));
   setCharacters(mergeCharacters(data.characters));
     setRoundsToPlay(data.rounds_to_play || 3);
+    setChatMessages([]); // Reset chat on new room
     setGameState('lobby');
     navigate(`/game/paintball/${data.room_code}`);
-  }, [navigate]);
+  }, [navigate, mergeMaps, mergeCharacters]);
 
   const handleRoomJoined = useCallback((data) => {
     setRoomCode(data.room_code);
@@ -86,9 +110,10 @@ function Paintball({ user, onLogout }) {
   setMaps(mergeMaps(data.maps));
   setCharacters(mergeCharacters(data.characters));
     setRoundsToPlay(data.rounds_to_play || 3);
+    setChatMessages([]); // Reset chat on join
     setGameState('lobby');
     navigate(`/game/paintball/${data.room_code}`);
-  }, [navigate]);
+  }, [navigate, mergeMaps, mergeCharacters]);
 
   const handlePlayerJoined = useCallback((data) => {
     setPlayers(data.players || []);
@@ -114,7 +139,9 @@ function Paintball({ user, onLogout }) {
     setGameData(data);
     setRoundResult(null);
     setMatchResult(null);
+    setRoundTransition({ type: 'start', round: data.round });
     setGameState('playing');
+    setTimeout(() => setRoundTransition(null), 2000);
   }, []);
 
   const handleGameUpdate = useCallback((data) => {
@@ -123,11 +150,15 @@ function Paintball({ user, onLogout }) {
 
   const handleRoundEnded = useCallback((data) => {
     setRoundResult(data);
+    setRoundTransition({ type: 'end', round: data.round, winner: data.winner });
+    setTimeout(() => setRoundTransition(null), 3000);
   }, []);
 
   const handleRoundStarted = useCallback((data) => {
     setGameData(data);
     setRoundResult(null);
+    setRoundTransition({ type: 'start', round: data.round });
+    setTimeout(() => setRoundTransition(null), 2000);
   }, []);
 
   const handleMatchOver = useCallback((data) => {
@@ -227,50 +258,185 @@ function Paintball({ user, onLogout }) {
       setRoundResult(null);
       return;
     }
-    setRoomCode(roomId.toUpperCase());
-    setGameState('menu');
-  }, [roomId]);
+    
+    // Auto-join when URL has roomId and we have a socket connection
+    // Only attempt join if we're in menu state and haven't joined yet
+    if (socket && connected && playerName.trim() && gameState === 'menu' && players.length === 0) {
+      const codeToJoin = roomId.toUpperCase();
+      setRoomCode(codeToJoin);
+      socket.emit('join_room', { name: playerName, room_code: codeToJoin });
+    } else if (gameState === 'menu') {
+      setRoomCode(roomId.toUpperCase());
+    }
+  }, [roomId, socket, connected, playerName]);
 
   const drawGame = useCallback(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !gameData?.map) return;
+    if (!canvas || !gameData?.map || !imagesLoaded) return;
     const ctx = canvas.getContext('2d');
     const { width, height } = gameData.map;
+    
+    // Scale canvas to fit screen while maintaining aspect ratio
+    const maxWidth = window.innerWidth - 400; // Account for sidebar
+    const maxHeight = window.innerHeight - 200; // Account for header/controls
+    const scale = Math.min(maxWidth / width, maxHeight / height, 1);
+    
     canvas.width = width;
     canvas.height = height;
+    canvas.style.width = `${width * scale}px`;
+    canvas.style.height = `${height * scale}px`;
 
     ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = '#12263a';
+    
+    // Apply zoom transformation centered on player
+    const me = gameData.players.find((p) => p.id === socket.id);
+    if (me && zoomLevel !== 1.0) {
+      ctx.save();
+      // Center zoom on player position
+      ctx.translate(width / 2, height / 2);
+      ctx.scale(zoomLevel, zoomLevel);
+      ctx.translate(-me.x, -me.y);
+    }
+    
+    // Use map-specific background color or default
+    ctx.fillStyle = gameData.map.background_color || '#12263a';
     ctx.fillRect(0, 0, width, height);
 
     ctx.strokeStyle = '#2f4c6b';
     ctx.lineWidth = 4;
     ctx.strokeRect(8, 8, width - 16, height - 16);
 
+    // Draw obstacles
+    if (gameData.map.obstacles) {
+      gameData.map.obstacles.forEach((obstacle) => {
+        ctx.fillStyle = obstacle.color || '#2f4c6b';
+        if (obstacle.type === 'rect') {
+          ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+          // Add border
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        } else if (obstacle.type === 'circle') {
+          ctx.beginPath();
+          ctx.arc(obstacle.x, obstacle.y, obstacle.radius, 0, Math.PI * 2);
+          ctx.fill();
+          // Add border
+          ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+      });
+    }
+
+    // Draw projectiles
+    if (gameData.projectiles) {
+      gameData.projectiles.forEach((proj) => {
+        const projectileColor = proj.color || '#fbbf24';
+        ctx.fillStyle = projectileColor;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = projectileColor;
+        ctx.beginPath();
+        ctx.arc(proj.x, proj.y, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+    }
+
+    // Draw barriers
+    if (gameData.barriers) {
+      gameData.barriers.forEach((barrier) => {
+        const healthPercent = barrier.health / barrier.max_health;
+        ctx.fillStyle = `rgba(148, 163, 184, ${0.3 + healthPercent * 0.5})`;
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(barrier.x, barrier.y, 35, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        
+        // Draw shield icon or health indicator
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 20px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🛡️', barrier.x, barrier.y);
+      });
+    }
+
+    // Draw players
     gameData.players.forEach((player) => {
-      const character = CHARACTER_CARDS.find((char) => char.id === player.character);
-      ctx.fillStyle = character?.color || '#f97316';
-      ctx.beginPath();
-      ctx.arc(player.x, player.y, 16, 0, Math.PI * 2);
-      ctx.fill();
+      if (!player.alive) return;
+      
+      // Apply phase effect if Phase character is using ability
+      if (player.character === 'phase' && player.ability_active) {
+        ctx.globalAlpha = 0.4; // Semi-transparent when phasing
+      }
+      
+      const img = characterImages[player.character];
+      if (img && img.complete) {
+        // Draw character sprite
+        const size = 36;  // Made slightly smaller for better fit
+        ctx.save();
+        ctx.translate(player.x, player.y);
+        ctx.rotate(player.aim + Math.PI / 2); // Rotate to face aim direction
+        
+        // Add purple glow for Phase ability
+        if (player.character === 'phase' && player.ability_active) {
+          ctx.shadowBlur = 20;
+          ctx.shadowColor = '#a855f7';
+        }
+        
+        ctx.drawImage(img, -size / 2, -size / 2, size, size);
+        ctx.restore();
+      } else {
+        // Fallback circle if image not loaded
+        ctx.fillStyle = player.color || '#f97316';
+        
+        // Add purple glow for Phase ability
+        if (player.character === 'phase' && player.ability_active) {
+          ctx.shadowBlur = 20;
+          ctx.shadowColor = '#a855f7';
+        }
+        
+        ctx.beginPath();
+        ctx.arc(player.x, player.y, 14, 0, Math.PI * 2);  // Thinner
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+      
+      // Reset alpha
+      ctx.globalAlpha = 1.0;
 
-  const labelText = player.name;
-  ctx.font = '12px sans-serif';
-  const textWidth = ctx.measureText(labelText).width;
-  const labelX = player.x - textWidth / 2;
-  const labelY = player.y - 28;
-  ctx.fillStyle = 'rgba(15, 23, 42, 0.7)';
-  ctx.fillRect(labelX - 6, labelY - 12, textWidth + 12, 16);
-  ctx.fillStyle = '#fff';
-  ctx.fillText(labelText, labelX, labelY);
+      // Draw name label
+      const labelText = player.name;
+      ctx.font = '11px sans-serif';  // Slightly smaller
+      const textWidth = ctx.measureText(labelText).width;
+      const labelX = player.x - textWidth / 2;
+      const labelY = player.y - 35;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+      ctx.fillRect(labelX - 4, labelY - 10, textWidth + 8, 14);
+      ctx.fillStyle = player.color || '#fff';
+      ctx.fillText(labelText, labelX, labelY);
 
-      ctx.strokeStyle = '#facc15';
-      ctx.beginPath();
-      ctx.moveTo(player.x, player.y);
-      ctx.lineTo(player.x + Math.cos(player.aim) * 26, player.y + Math.sin(player.aim) * 26);
-      ctx.stroke();
+      // Draw health bar
+      const barWidth = 40;
+      const barHeight = 4;
+      const barX = player.x - barWidth / 2;
+      const barY = player.y + 25;
+      const healthPercent = player.health / player.max_health;
+      
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.7)';
+      ctx.fillRect(barX, barY, barWidth, barHeight);
+      
+      ctx.fillStyle = healthPercent > 0.5 ? '#22c55e' : healthPercent > 0.25 ? '#fbbf24' : '#ef4444';
+      ctx.fillRect(barX, barY, barWidth * healthPercent, barHeight);
     });
-  }, [gameData]);
+    
+    // Restore context if zoom was applied
+    if (me && zoomLevel !== 1.0) {
+      ctx.restore();
+    }
+  }, [gameData, imagesLoaded, characterImages, socket, zoomLevel]);
 
   useEffect(() => {
     if (gameState !== 'playing' || !gameData) {
@@ -310,6 +476,9 @@ function Paintball({ user, onLogout }) {
       return;
     }
     const customRoomName = roomName.trim();
+    // Clear any existing room state and reset chat
+    setChatMessages([]);
+    setGameState('menu'); // Stay in menu until room is confirmed
     socket.emit('create_room', {
       name: playerName,
       room_name: customRoomName,
@@ -370,7 +539,12 @@ function Paintball({ user, onLogout }) {
     if (INPUT_KEYS.left.includes(key)) inputRef.current.left = true;
     if (INPUT_KEYS.right.includes(key)) inputRef.current.right = true;
     if (key === ' ') {
+      event.preventDefault();
       socket.emit('shoot', { aim: aimRef.current });
+    }
+    if (key === 'q') {
+      event.preventDefault();
+      socket.emit('activate_ability');
     }
   };
 
@@ -386,13 +560,33 @@ function Paintball({ user, onLogout }) {
     const canvas = canvasRef.current;
     if (!canvas || !gameData) return;
     const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+    
+    // Get canvas scale
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    // Calculate mouse position in canvas coordinates
+    const canvasX = (event.clientX - rect.left) * scaleX;
+    const canvasY = (event.clientY - rect.top) * scaleY;
+    
     const me = gameData.players.find((p) => p.id === socket.id);
     if (!me) return;
-    const dx = x - me.x;
-    const dy = y - me.y;
+    const dx = canvasX - me.x;
+    const dy = canvasY - me.y;
     aimRef.current = Math.atan2(dy, dx);
+  };
+
+  const onRightClick = (event) => {
+    event.preventDefault(); // Prevent context menu
+    if (socket && gameData) {
+      socket.emit('shoot', { aim: aimRef.current });
+    }
+  };
+
+  const onWheel = (event) => {
+    event.preventDefault();
+    const delta = event.deltaY > 0 ? -0.1 : 0.1; // Zoom out on scroll down, zoom in on scroll up
+    setZoomLevel((prev) => Math.max(1.0, Math.min(2.0, prev + delta)));
   };
 
   if (gameState === 'menu') {
@@ -483,7 +677,7 @@ function Paintball({ user, onLogout }) {
             <div className="chat-box">
               {chatMessages.map((msg, index) => (
                 <div key={`${msg.timestamp}-${index}`} className="chat-message">
-                  <strong>{msg.player}:</strong> {msg.message}
+                  <strong style={{ color: msg.color || '#fff' }}>{msg.player}:</strong> {msg.message}
                 </div>
               ))}
             </div>
@@ -512,7 +706,7 @@ function Paintball({ user, onLogout }) {
                 <div className="player-list">
                   {players.map((player) => (
                     <div key={player.id} className="lobby-player">
-                      <span>{player.name}</span>
+                      <span style={{ color: player.color || '#fff' }}>{player.name}</span>
                       <span className="player-role">{player.is_host ? 'HOST' : player.character}</span>
                     </div>
                   ))}
@@ -579,25 +773,79 @@ function Paintball({ user, onLogout }) {
     );
   }
 
-  return (
-    <div className="paintball-game" tabIndex={0} onKeyDown={onKeyDown} onKeyUp={onKeyUp}>
-      <div className="game-header">
-        <div>
-          <h2>Round {gameData?.round} / {gameData?.rounds_to_play}</h2>
-          <p>Map: {gameData?.map?.name || 'Loading...'}</p>
+  // Game playing state
+  if (gameState === 'playing') {
+    if (!imagesLoaded) {
+      return (
+        <div className="paintball-game">
+          <div className="loading-screen">
+            <div className="loading-spinner"></div>
+            <h2>Loading Game...</h2>
+            <p>Preparing the arena</p>
+          </div>
         </div>
-        <div>
-          <Link to="/game/paintball"><button className="logout-btn">Back to Lobby</button></Link>
+      );
+    }
+
+    const formatTime = (seconds) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    return (
+      <div className="paintball-game" tabIndex={0} onKeyDown={onKeyDown} onKeyUp={onKeyUp}>
+        <div className="game-header">
+          <div className="header-info">
+            <h2>Round {gameData?.round} / {gameData?.rounds_to_play}</h2>
+            <p>Map: {gameData?.map?.name || 'Loading...'}</p>
+            <div className="timer-display">
+              <span className="timer-label">Time:</span>
+              <span className="timer-value">{formatTime(gameData?.time_remaining || 0)}</span>
+            </div>
+          </div>
+          <div className="header-controls">
+            <div className="controls-list">
+              <span><strong>WASD/Arrows:</strong> Move</span>
+              <span><strong>Space/Right-Click:</strong> Shoot</span>
+              <span><strong>Q:</strong> Ability</span>
+              <span><strong>Mouse:</strong> Aim</span>
+            </div>
+          </div>
+          <div className="header-actions">
+            <Link to="/game/paintball"><button className="logout-btn">Back to Lobby</button></Link>
+          </div>
         </div>
-      </div>
 
       <div className="game-layout">
         <div className="scoreboard">
           <h3>Scoreboard</h3>
-          {gameData?.players.map((player) => (
+          {gameData?.players
+            .sort((a, b) => b.eliminations - a.eliminations)
+            .map((player) => (
             <div key={player.id} className="score-row">
-              <span>{player.name}</span>
-              <span>{player.eliminations} elim</span>
+              <div className="player-info">
+                <span style={{ color: player.color }}>{player.name}</span>
+                <span className="elim-count">{player.eliminations} elim</span>
+              </div>
+              {player.ability_active && (
+                <span className="ability-indicator active">⚡ ABILITY ACTIVE</span>
+              )}
+              {player.ability_used && !player.ability_active && (
+                <span className="ability-indicator used">✓ Used</span>
+              )}
+              {!player.ability_used && !player.ability_active && (
+                <span className="ability-indicator ready">Q - Ready</span>
+              )}
+              <div className="player-health-bar">
+                <div 
+                  className="health-fill" 
+                  style={{ 
+                    width: `${(player.health / player.max_health) * 100}%`,
+                    background: player.alive ? (player.health > 50 ? '#22c55e' : player.health > 25 ? '#fbbf24' : '#ef4444') : '#64748b'
+                  }}
+                ></div>
+              </div>
             </div>
           ))}
           <div className="sidebar-chat">
@@ -621,7 +869,7 @@ function Paintball({ user, onLogout }) {
             </div>
           </div>
         </div>
-        <div className="canvas-wrapper" onMouseMove={onMouseMove}>
+        <div className="canvas-wrapper" onMouseMove={onMouseMove} onContextMenu={onRightClick} onWheel={onWheel}>
           <canvas ref={canvasRef} />
         </div>
       </div>
@@ -630,33 +878,95 @@ function Paintball({ user, onLogout }) {
         <span>Move: WASD / Arrow Keys</span>
         <span>Shoot: Space</span>
         <span>Aim: Mouse</span>
+        <span>Ability: Q</span>
       </div>
 
-      {roundResult && (
-        <div className="round-modal">
-          <div className="modal-content">
-            <h2>Round {roundResult.round} Complete</h2>
-            <p>Winner: {roundResult.winner?.name || 'No winner'}</p>
+      {roundTransition && (
+        <div className="round-transition-overlay">
+          <div className="transition-content">
+            {roundTransition.type === 'start' && (
+              <>
+                <h1>Round {roundTransition.round}</h1>
+                <p>Fight!</p>
+              </>
+            )}
+            {roundTransition.type === 'end' && (
+              <>
+                <h1>Round {roundTransition.round} Complete!</h1>
+                <p className="winner-text">{roundTransition.winner?.name || 'Draw'} wins!</p>
+              </>
+            )}
           </div>
         </div>
       )}
 
       {matchResult && (
-        <div className="round-modal">
+        <div className="round-modal match-complete">
           <div className="modal-content">
-            <h2>Match Complete</h2>
-            <ul>
-              {matchResult.map((round) => (
-                <li key={round.round}>
-                  Round {round.round}: {round.winner?.name || 'No winner'}
-                </li>
-              ))}
-            </ul>
+            <h1>🎯 Match Complete!</h1>
+            <div className="match-results">
+              <h3>Final Leaderboard</h3>
+              <div className="leaderboard">
+                {gameData?.players
+                  .map((player) => {
+                    // Calculate total eliminations across all rounds
+                    const totalElims = matchResult.reduce((sum, round) => {
+                      const playerScore = round.scores?.find((s) => s.id === player.id);
+                      return sum + (playerScore?.eliminations || 0);
+                    }, 0);
+                    return {
+                      ...player,
+                      totalElims,
+                    };
+                  })
+                  .sort((a, b) => {
+                    // Sort by rounds won first, then by total eliminations
+                    if (b.rounds_won !== a.rounds_won) {
+                      return b.rounds_won - a.rounds_won;
+                    }
+                    return b.totalElims - a.totalElims;
+                  })
+                  .map((player, idx) => (
+                    <div key={player.id} className="leaderboard-row">
+                      <span className="rank">
+                        {idx === 0 && '🥇'}
+                        {idx === 1 && '🥈'}
+                        {idx === 2 && '🥉'}
+                        {idx > 2 && `${idx + 1}.`}
+                      </span>
+                      <span className="player-name" style={{ color: player.color }}>
+                        {player.name}
+                      </span>
+                      <span className="player-stats">
+                        <strong>{player.rounds_won}</strong> round wins
+                      </span>
+                      <span className="player-stats">
+                        <strong>{player.totalElims}</strong> total elims
+                      </span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+            <div className="match-buttons">
+              <button className="paintball-btn" onClick={() => {
+                setMatchResult(null);
+                setGameState('lobby');
+              }}>
+                Back to Lobby
+              </button>
+              <Link to="/game/paintball">
+                <button className="paintball-btn secondary">Leave Lobby</button>
+              </Link>
+            </div>
           </div>
         </div>
       )}
     </div>
   );
+  }
+
+  // Fallback return
+  return null;
 }
 
 export default Paintball;

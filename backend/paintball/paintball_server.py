@@ -41,10 +41,19 @@ def handle_disconnect():
         room_code = player_rooms[socket_id]
         if room_code in games:
             game = games[room_code]
+            player_name = game.players.get(socket_id, {}).get('name', 'Unknown')
+            player_color = game.players.get(socket_id, {}).get('color', '#ffffff')
             game.remove_player(socket_id)
             socketio.emit('player_left', {
-                'player_name': game.players.get(socket_id, {}).get('name', 'Unknown'),
+                'player_name': player_name,
                 'players': _players_list(game)
+            }, room=room_code)
+            # Send chat notification
+            socketio.emit('chat_message', {
+                'player': 'System',
+                'color': '#94a3b8',
+                'message': f'{player_name} left the lobby',
+                'timestamp': time.time()
             }, room=room_code)
             if len(game.players) == 0:
                 del games[room_code]
@@ -89,6 +98,15 @@ def handle_create_room(data):
         'characters': _characters_payload(),
         'rounds_to_play': game.rounds_to_play
     })
+    
+    # Send join notification to room
+    player_color = game.players[socket_id]['color']
+    socketio.emit('chat_message', {
+        'player': 'System',
+        'color': '#94a3b8',
+        'message': f'{player_name} joined the lobby',
+        'timestamp': time.time()
+    }, room=room_code)
 
 
 @socketio.on('join_room')
@@ -132,6 +150,15 @@ def handle_join_room(data):
         'characters': _characters_payload(),
         'rounds_to_play': game.rounds_to_play
     })
+    
+    # Send join notification to room
+    player_color = game.players[socket_id]['color']
+    socketio.emit('chat_message', {
+        'player': 'System',
+        'color': '#94a3b8',
+        'message': f'{player_name} joined the lobby',
+        'timestamp': time.time()
+    }, room=room_code)
 
 
 @socketio.on('update_lobby_settings')
@@ -210,8 +237,22 @@ def handle_player_move(data):
     move_x = float(data.get('move_x', 0))
     move_y = float(data.get('move_y', 0))
     game.update_player(socket_id, move_x, move_y)
-    _check_round_time(game, room_code)
-    socketio.emit('game_update', game.get_state(), room=room_code)
+    
+    # Update projectiles
+    hits = game.update_projectiles()
+    for hit in hits:
+        if hit.get("eliminated"):
+            socketio.emit('player_eliminated', {
+                'shooter_id': hit['shooter_id'],
+                'target_id': hit['target_id']
+            }, room=room_code)
+    
+    # Check if round should end
+    if game.check_round_over():
+        _end_round(game, room_code)
+    else:
+        _check_round_time(game, room_code)
+        socketio.emit('game_update', game.get_state(), room=room_code)
 
 
 @socketio.on('player_aim')
@@ -233,15 +274,11 @@ def handle_shoot(data):
     game = games[room_code]
     if not game.game_started:
         return
-    hit_target = game.handle_shot(socket_id, float(data.get('aim', 0.0)))
-    if hit_target:
-        socketio.emit('player_hit', {
-            'shooter': socket_id,
-            'target': hit_target,
-            'shooter_name': game.players.get(socket_id, {}).get('name', 'Player'),
-            'target_name': game.players.get(hit_target, {}).get('name', 'Player')
+    projectile = game.handle_shot(socket_id, float(data.get('aim', 0.0)))
+    if projectile:
+        socketio.emit('projectile_fired', {
+            'projectile': projectile
         }, room=room_code)
-    _check_round_time(game, room_code)
     socketio.emit('game_update', game.get_state(), room=room_code)
 
 
@@ -257,9 +294,27 @@ def handle_chat_message(data):
         return
     socketio.emit('chat_message', {
         'player': game.players.get(socket_id, {}).get('name', 'Player'),
+        'color': game.players.get(socket_id, {}).get('color', '#ffffff'),
         'message': message,
         'timestamp': time.time()
     }, room=room_code)
+
+
+@socketio.on('activate_ability')
+def handle_activate_ability():
+    socket_id = request.sid
+    room_code = player_rooms.get(socket_id)
+    if not room_code or room_code not in games:
+        return
+    game = games[room_code]
+    if not game.game_started:
+        return
+    if game.activate_ability(socket_id):
+        socketio.emit('ability_activated', {
+            'player_id': socket_id,
+            'character': game.players.get(socket_id, {}).get('character')
+        }, room=room_code)
+        socketio.emit('game_update', game.get_state(), room=room_code)
 
 
 @socketio.on('request_round_end')
@@ -288,8 +343,10 @@ def _end_round(game: PaintballGame, room_code: str):
     if game.advance_round():
         socketio.emit('round_started', game.get_state(), room=room_code)
     else:
+        # Match over, but keep game instance for rematch
         socketio.emit('match_over', {
-            'results': game.match_results
+            'results': game.match_results,
+            'room_code': room_code
         }, room=room_code)
 
 

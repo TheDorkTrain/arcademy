@@ -3,6 +3,7 @@
   "name": "Icefield Ridge",
   "width": 1150,
   "height": 750,
+  "background_color": "#e0f2f7",
   "spawn_points": [
     {"x": 130, "y": 130},
     {"x": 1020, "y": 130},
@@ -12,5 +13,14 @@
     {"x": 575, "y": 620},
     {"x": 130, "y": 375},
     {"x": 1020, "y": 375}
+  ],
+  "obstacles": [
+    {"type": "circle", "x": 350, "y": 250, "radius": 60, "color": "#b3d9e8"},
+    {"type": "circle", "x": 800, "y": 250, "radius": 60, "color": "#b3d9e8"},
+    {"type": "circle", "x": 350, "y": 500, "radius": 60, "color": "#b3d9e8"},
+    {"type": "circle", "x": 800, "y": 500, "radius": 60, "color": "#b3d9e8"},
+    {"type": "rect", "x": 500, "y": 300, "width": 150, "height": 150, "color": "#c7e6f2"},
+    {"type": "rect", "x": 250, "y": 350, "width": 50, "height": 50, "color": "#d4ecf5"},
+    {"type": "rect", "x": 850, "y": 350, "width": 50, "height": 50, "color": "#d4ecf5"}
   ]
 }

@@ -2,6 +2,7 @@ import SprinterPng from './CharacterPngs/Sprinter.png';
 import GuardianPng from './CharacterPngs/Guardian.png';
 import SharpshotPng from './CharacterPngs/Sharpshot.png';
 import BlitzerPng from './CharacterPngs/Blitzer.png';
+import PhasePng from './CharacterPngs/Phase.png';
 
 export const CHARACTER_CARDS = [
   {
@@ -35,5 +36,13 @@ export const CHARACTER_CARDS = [
     description: 'Quick bursts for close fights.',
     color: '#facc15',
     sprite: BlitzerPng
+  },
+  {
+    id: 'phase',
+    name: 'Phase',
+    ability: 'Phase Shift',
+    description: 'Pass through walls to find opponents.',
+    color: '#a855f7',
+    sprite: PhasePng
   }
 ];

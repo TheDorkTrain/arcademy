@@ -3,6 +3,7 @@
   "name": "Forest Outpost",
   "width": 1200,
   "height": 800,
+  "background_color": "#1e2d1f",
   "spawn_points": [
     {"x": 120, "y": 120},
     {"x": 1080, "y": 120},
@@ -12,5 +13,14 @@
     {"x": 600, "y": 680},
     {"x": 120, "y": 400},
     {"x": 1080, "y": 400}
+  ],
+  "obstacles": [
+    {"type": "circle", "x": 300, "y": 300, "radius": 50, "color": "#2d4a2e"},
+    {"type": "circle", "x": 900, "y": 300, "radius": 50, "color": "#2d4a2e"},
+    {"type": "circle", "x": 300, "y": 500, "radius": 50, "color": "#2d4a2e"},
+    {"type": "circle", "x": 900, "y": 500, "radius": 50, "color": "#2d4a2e"},
+    {"type": "circle", "x": 600, "y": 400, "radius": 70, "color": "#3a5f3c"},
+    {"type": "rect", "x": 450, "y": 200, "width": 300, "height": 40, "color": "#2d4a2e"},
+    {"type": "rect", "x": 450, "y": 560, "width": 300, "height": 40, "color": "#2d4a2e"}
   ]
 }
