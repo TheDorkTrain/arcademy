@@ -163,6 +163,17 @@ class PaintballGame:
         if socket_id in self.player_order:
             self.player_order.remove(socket_id)
 
+    def get_player(self, socket_id: str):
+        """Get player data as a simple object for attribute access"""
+        if socket_id not in self.players:
+            return None
+        
+        from types import SimpleNamespace
+        player_data = self.players[socket_id].copy()
+        player_data['socket_id'] = socket_id
+        player_data['is_host'] = (socket_id == self.player_order[0] if self.player_order else False)
+        return SimpleNamespace(**player_data)
+
     def update_rounds(self, rounds_to_play: int):
         self.rounds_to_play = max(1, min(rounds_to_play, 10))
 
@@ -176,6 +187,26 @@ class PaintballGame:
     def vote_map(self, socket_id: str, map_id: str):
         if map_id in [m.map_id for m in MAPS]:
             self.map_votes[socket_id] = map_id
+
+    def get_winning_map(self):
+        """Get the currently winning map from votes (needs majority)"""
+        if not self.map_votes:
+            return None
+        
+        tally = {}
+        for vote in self.map_votes.values():
+            tally[vote] = tally.get(vote, 0) + 1
+        
+        # Need majority to select (more than half of players)
+        total_players = len(self.players)
+        if total_players == 0:
+            return None
+        
+        for map_id, votes in tally.items():
+            if votes > total_players / 2:
+                return map_id
+        
+        return None
 
     def _choose_map(self) -> MapConfig:
         if self.map_votes:
@@ -262,7 +293,6 @@ class PaintballGame:
             "scores": scores_sorted,
         })
         self.round_start_time = None
-        return winner, scores_sorted
         return winner, scores_sorted
 
     def advance_round(self):

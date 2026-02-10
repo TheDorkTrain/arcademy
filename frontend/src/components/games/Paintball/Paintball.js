@@ -13,7 +13,7 @@ const INPUT_KEYS = {
   right: ['d', 'arrowright']
 };
 
-function Paintball({ user, onLogout }) {
+function Paintball() {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const canvasRef = useRef(null);
@@ -91,50 +91,34 @@ function Paintball({ user, onLogout }) {
     }));
   }, []);
 
-  const handleRoomCreated = useCallback((data) => {
-    setRoomCode(data.room_code);
-    setRoomName(data.room_name || data.room_code);
-    setPlayers(data.players || []);
-    setIsHost(true);
-  setMaps(mergeMaps(data.maps));
-  setCharacters(mergeCharacters(data.characters));
-    setRoundsToPlay(data.rounds_to_play || 3);
-    setChatMessages([]); // Reset chat on new room
-    setGameState('lobby');
-    navigate(`/game/paintball/${data.room_code}`);
-  }, [navigate, mergeMaps, mergeCharacters]);
-
   const handleRoomJoined = useCallback((data) => {
+    console.log('Room joined:', data);
+    
+    // Full state from backend
     setRoomCode(data.room_code);
     setRoomName(data.room_name || data.room_code);
     setPlayers(data.players || []);
-  setMaps(mergeMaps(data.maps));
-  setCharacters(mergeCharacters(data.characters));
     setRoundsToPlay(data.rounds_to_play || 3);
-    setChatMessages([]); // Reset chat on join
+    
+    // Set maps and characters if provided
+    if (data.maps) {
+      setMaps(mergeMaps(data.maps));
+    }
+    if (data.characters) {
+      setCharacters(mergeCharacters(data.characters));
+    }
+    
+    // Check if we're the host - use request.sid from backend or check first player
+    if (data.players && data.players.length > 0) {
+      // The backend sets is_host flag on each player
+      const me = data.players.find(p => p.is_host);
+      setIsHost(me ? true : false);
+    }
+    
+    setChatMessages([]); // Reset chat
     setGameState('lobby');
     navigate(`/game/paintball/${data.room_code}`);
   }, [navigate, mergeMaps, mergeCharacters]);
-
-  const handlePlayerJoined = useCallback((data) => {
-    setPlayers(data.players || []);
-  }, []);
-
-  const handlePlayerLeft = useCallback((data) => {
-    setPlayers(data.players || []);
-  }, []);
-
-  const handleLobbySettings = useCallback((data) => {
-    setRoundsToPlay(data.rounds_to_play);
-  }, []);
-
-  const handleMapVotes = useCallback((data) => {
-    setMapVotes(data.votes || {});
-  }, []);
-
-  const handlePlayerUpdate = useCallback((data) => {
-    setPlayers(data.players || []);
-  }, []);
 
   const handleGameStarted = useCallback((data) => {
     setGameData(data);
@@ -185,11 +169,13 @@ function Paintball({ user, onLogout }) {
   }, []);
 
   useEffect(() => {
-    const socketUrl = window.location.hostname === 'localhost'
-      ? 'http://localhost:5006'
-      : `http://${window.location.hostname}:5006`;
-
-    const newSocket = io(socketUrl, {
+    // In development, connect to current origin (React dev server) which will proxy to paintball server
+    // The proxy in setupProxy.js forwards /socket.io to localhost:5006
+    console.log('🔌 Environment:', process.env.NODE_ENV);
+    console.log('🔌 Window location:', window.location.origin);
+    
+    const newSocket = io({
+      path: '/socket.io',
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: 5,
@@ -197,32 +183,51 @@ function Paintball({ user, onLogout }) {
     });
 
     newSocket.on('connect', () => {
+      console.log('✅ Socket connected:', newSocket.id);
       setConnected(true);
       setSocketId(newSocket.id);
     });
 
     newSocket.on('disconnect', () => {
+      console.log('❌ Socket disconnected');
       setConnected(false);
       setSocketId(null);
     });
 
     newSocket.on('error', (data) => {
+      console.error('❌ Server error:', data);
       setNotification(data.message || 'Server error');
     });
 
-    newSocket.on('room_created', handleRoomCreated);
-    newSocket.on('room_joined', handleRoomJoined);
-    newSocket.on('player_joined', handlePlayerJoined);
-    newSocket.on('player_left', handlePlayerLeft);
-    newSocket.on('lobby_settings', handleLobbySettings);
-    newSocket.on('map_votes', handleMapVotes);
-    newSocket.on('player_update', handlePlayerUpdate);
+    // NEW SIMPLIFIED EVENT MODEL
+    // room_joined gives us initial state when we join/create
+    newSocket.on('room_joined', (data) => {
+      console.log('✅ room_joined event received:', data);
+      handleRoomJoined(data);
+    });
+    
+    // room_state_update gives us full state whenever anything changes
+    newSocket.on('room_state_update', (data) => {
+      console.log('Room state update:', data);
+      setPlayers(data.players || []);
+      setRoomCode(data.room_code);
+      setRoomName(data.room_name);
+      setRoundsToPlay(data.rounds_to_play);
+      // Map voting is tracked via mapVotes state
+    });
 
     newSocket.on('lobbies_list', (data) => {
       setAvailableLobbies(data.lobbies || []);
     });
 
-    newSocket.on('game_started', handleGameStarted);
+    newSocket.on('left_lobby', () => {
+      setGameState('menu');
+      setPlayers([]);
+      setRoomCode('');
+      setRoomName('');
+    });
+
+    newSocket.on('game_starting', handleGameStarted);
     newSocket.on('game_update', handleGameUpdate);
     newSocket.on('round_ended', handleRoundEnded);
     newSocket.on('round_started', handleRoundStarted);
@@ -234,22 +239,8 @@ function Paintball({ user, onLogout }) {
     setSocket(newSocket);
 
     return () => newSocket.close();
-  }, [
-    handleChatMessage,
-    handleGameStarted,
-    handleGameUpdate,
-    handleLobbySettings,
-    handleMapVotes,
-    handleMatchOver,
-    handlePlayerJoined,
-    handlePlayerLeft,
-    handlePlayerUpdate,
-    handleRoomCreated,
-    handleRoomJoined,
-    handleRoundEnded,
-    handleRoundStarted,
-    handlePlayerHit
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   useEffect(() => {
     if (!roomId) {
@@ -487,6 +478,11 @@ function Paintball({ user, onLogout }) {
   }, [gameState, socket]);
 
   const createRoom = () => {
+    if (!socket || !connected) {
+      console.error('Cannot create room - socket:', socket, 'connected:', connected);
+      setNotification('Not connected to server');
+      return;
+    }
     if (!playerName.trim()) {
       setNotification('Please enter your name');
       return;
@@ -495,6 +491,8 @@ function Paintball({ user, onLogout }) {
     // Clear any existing room state and reset chat
     setChatMessages([]);
     setGameState('menu'); // Stay in menu until room is confirmed
+    
+    console.log('🚀 Emitting create_room:', { name: playerName, room_name: customRoomName });
     socket.emit('create_room', {
       name: playerName,
       room_name: customRoomName,
@@ -503,15 +501,21 @@ function Paintball({ user, onLogout }) {
   };
 
   const joinRoom = () => {
+    if (!socket || !connected) {
+      console.error('Cannot join room - socket:', socket, 'connected:', connected);
+      setNotification('Not connected to server');
+      return;
+    }
     if (!playerName.trim()) {
       setNotification('Please enter your name');
       return;
     }
-  const codeToJoin = (roomId || roomCode.trim()).toUpperCase();
+    const codeToJoin = (roomId || roomCode.trim()).toUpperCase();
     if (!codeToJoin) {
       setNotification('Please enter a room code');
       return;
     }
+    console.log('🚀 Emitting join_room:', { name: playerName, room_code: codeToJoin });
     socket.emit('join_room', { name: playerName, room_code: codeToJoin });
   };
 
@@ -520,7 +524,20 @@ function Paintball({ user, onLogout }) {
       setNotification('Please enter your name');
       return;
     }
+    console.log('🚀 Emitting join_room (from lobby list):', { name: playerName, room_code: lobbyCode });
     socket.emit('join_room', { name: playerName, room_code: lobbyCode });
+  };
+
+  const leaveRoom = () => {
+    if (socket) {
+      socket.emit('leave_lobby');
+    }
+    setGameState('menu');
+    setRoomCode('');
+    setRoomName('');
+    setPlayers([]);
+    setIsHost(false);
+    navigate('/game/paintball');
   };
 
   const updateRounds = (value) => {
@@ -731,7 +748,7 @@ function Paintball({ user, onLogout }) {
             </div>
           </div>
           <div>
-            <Link to="/game/paintball"><button className="logout-btn">Leave Room</button></Link>
+            <button className="logout-btn" onClick={leaveRoom}>Leave Room</button>
           </div>
         </div>
         <div className="main-content">

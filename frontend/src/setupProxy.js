@@ -7,6 +7,17 @@ module.exports = function(app) {
     next();
   });
 
+  // Proxy for Paintball server WebSocket - match socket.io path
+  app.use(
+    '/socket.io',
+    createProxyMiddleware({
+      target: 'http://localhost:5006',
+      changeOrigin: true,
+      ws: true, // Enable WebSocket proxying
+      logLevel: 'debug'
+    })
+  );
+
   app.use(
     '/lovejs',
     createProxyMiddleware({
