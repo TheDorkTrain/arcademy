@@ -25,7 +25,6 @@ Dependencies:
     - QuestionEntity (input validation for questions)
 """
 from flask import Flask, request, jsonify
-import requests
 import random
 from would_you_rather_api.questions_dao import QuestionsDAO
 from would_you_rather_api.question_validator import QuestionEntity
@@ -34,6 +33,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 dao = QuestionsDAO()
+
 
 @app.route("/questions", methods=["POST"])
 def create_question():
@@ -68,6 +68,7 @@ def create_question():
     )
     return jsonify(new_q)
 
+
 @app.route("/questions/<int:question_id>/upvote", methods=["POST"])
 def upvote_option(question_id):
     """
@@ -94,6 +95,7 @@ def upvote_option(question_id):
         return jsonify({"error": "Question not found or invalid option."}), 404
     return jsonify({"message": f"Upvoted option {option} for question {question_id}"})
 
+
 @app.route("/questions/<int:question_id>", methods=["GET"])
 def get_question_by_id(question_id):
     """
@@ -111,6 +113,7 @@ def get_question_by_id(question_id):
     if not question:
         return jsonify({"error": "Question not found."}), 404
     return jsonify(question)
+
 
 @app.route("/questions/<int:question_id>", methods=["DELETE"])
 def delete_question(question_id):
@@ -131,6 +134,7 @@ def delete_question(question_id):
         return jsonify({"error": "Question not found."}), 404
     return jsonify({"message": f"Deleted question {question_id}"})
 
+
 @app.route("/questions/random", methods=["GET"])
 def get_random_question():
     """
@@ -145,6 +149,7 @@ def get_random_question():
     if not q:
         return jsonify({"error": "No questions available."}), 404
     return jsonify(q)
+
 
 @app.route("/questions/random_by_category", methods=["GET"])
 def get_random_question_by_category():
@@ -165,6 +170,7 @@ def get_random_question_by_category():
     if not questions:
         return jsonify({"error": "No questions found for this category."}), 404
     return jsonify(random.choice(questions))
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=8000)

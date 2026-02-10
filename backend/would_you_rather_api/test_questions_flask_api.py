@@ -1,11 +1,13 @@
 import pytest
 from would_you_rather_api.questions_flask_api import app
 
+
 @pytest.fixture
 def client():
     app.config['TESTING'] = True
     with app.test_client() as client:
         yield client
+
 
 def test_create_question(client):
     response = client.post('/questions', json={
@@ -17,9 +19,11 @@ def test_create_question(client):
     data = response.get_json()
     assert 'option1' in data and 'option2' in data
 
+
 def test_get_random_question(client):
     response = client.get('/questions/random')
     assert response.status_code in [200, 404]
+
 
 def test_upvote_option(client):
     # First, create a question
@@ -34,6 +38,7 @@ def test_upvote_option(client):
     upvote_data = upvote_resp.get_json()
     assert 'Upvoted option' in upvote_data.get('message', '')
 
+
 def test_get_question_by_id(client):
     create_resp = client.post('/questions', json={
         'option1': 'A', 'option2': 'B', 'category': 'TestCat'
@@ -46,6 +51,7 @@ def test_get_question_by_id(client):
     assert data['option1'] == 'A'
     assert data['option2'] == 'B'
 
+
 def test_delete_question(client):
     create_resp = client.post('/questions', json={
         'option1': 'A', 'option2': 'B', 'category': 'TestCat'
@@ -56,6 +62,7 @@ def test_delete_question(client):
     assert del_resp.status_code == 200
     msg = del_resp.get_json().get('message', '')
     assert 'Deleted question' in msg
+
 
 def test_random_by_category(client):
     # Create a question with a specific category

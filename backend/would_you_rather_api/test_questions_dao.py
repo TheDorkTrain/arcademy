@@ -8,13 +8,16 @@ import os
 
 MOCK_JSON = "mock_questions.json"
 
+
 def setup_mock_json():
     with open(MOCK_JSON, "w", encoding="utf-8") as f:
         f.write('{"questions": []}')
 
+
 def teardown_mock_json():
     if os.path.exists(MOCK_JSON):
         os.remove(MOCK_JSON)
+
 
 class TestQuestionsDAO:
     def setup_method(self):
@@ -96,4 +99,3 @@ class TestQuestionsDAO:
             assert self.dao._get_next_id() == 1
             self.dao.create_question("A", "B", "Cat")
             assert self.dao._get_next_id() == 2
-

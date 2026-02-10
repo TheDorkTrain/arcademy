@@ -11,12 +11,14 @@ Handles complete Dos game rules including:
 import random
 from enum import Enum
 
+
 class CardColor(Enum):
     RED = "red"
     YELLOW = "yellow"
     GREEN = "green"
     BLUE = "blue"
     WILD = "wild"
+
 
 class CardType(Enum):
     NUMBER = "number"
@@ -25,6 +27,7 @@ class CardType(Enum):
     DRAW_TWO = "draw_two"
     WILD = "wild"
     WILD_DRAW_FOUR = "wild_draw_four"
+
 
 class DosGame:
     def __init__(self, room_id):
@@ -42,14 +45,14 @@ class DosGame:
         self.winner = None
         self.last_action = ""
         self.dos_challenge_window = {}  # {player_id: timestamp}
-        
+
     def create_deck(self):
         """Create a standard 108-card Dos deck"""
         self.deck = []
-        
+
         # Regular colored cards
         colors = [CardColor.RED, CardColor.YELLOW, CardColor.GREEN, CardColor.BLUE]
-        
+
         for color in colors:
             # One 0 card per color
             self.deck.append({
@@ -58,7 +61,7 @@ class DosGame:
                 'value': 0,
                 'id': f'{color.value}_0_1'
             })
-            
+
             # Two of each number 1-9 per color
             for num in range(1, 10):
                 for i in range(2):
@@ -66,61 +69,61 @@ class DosGame:
                         'color': color.value,
                         'type': CardType.NUMBER.value,
                         'value': num,
-                        'id': f'{color.value}_{num}_{i+1}'
+                        'id': f'{color.value}_{num}_{i + 1}'
                     })
-            
+
             # Two Skip cards per color
             for i in range(2):
                 self.deck.append({
                     'color': color.value,
                     'type': CardType.SKIP.value,
                     'value': 'skip',
-                    'id': f'{color.value}_skip_{i+1}'
+                    'id': f'{color.value}_skip_{i + 1}'
                 })
-            
+
             # Two Reverse cards per color
             for i in range(2):
                 self.deck.append({
                     'color': color.value,
                     'type': CardType.REVERSE.value,
                     'value': 'reverse',
-                    'id': f'{color.value}_reverse_{i+1}'
+                    'id': f'{color.value}_reverse_{i + 1}'
                 })
-            
+
             # Two Draw Two cards per color
             for i in range(2):
                 self.deck.append({
                     'color': color.value,
                     'type': CardType.DRAW_TWO.value,
                     'value': '+2',
-                    'id': f'{color.value}_draw2_{i+1}'
+                    'id': f'{color.value}_draw2_{i + 1}'
                 })
-        
+
         # Wild cards
         for i in range(4):
             self.deck.append({
                 'color': CardColor.WILD.value,
                 'type': CardType.WILD.value,
                 'value': 'wild',
-                'id': f'wild_{i+1}'
+                'id': f'wild_{i + 1}'
             })
-        
+
         # Wild Draw Four cards
         for i in range(4):
             self.deck.append({
                 'color': CardColor.WILD.value,
                 'type': CardType.WILD_DRAW_FOUR.value,
                 'value': '+4',
-                'id': f'wild_draw4_{i+1}'
+                'id': f'wild_draw4_{i + 1}'
             })
-        
+
         random.shuffle(self.deck)
-        
+
     def add_player(self, socket_id, name, position):
         """Add a player to the game"""
         if len(self.players) >= 8:
             return False
-        
+
         self.players[socket_id] = {
             'name': name,
             'hand': [],
@@ -130,21 +133,21 @@ class DosGame:
         }
         self.player_order.append(socket_id)
         return True
-    
+
     def remove_player(self, socket_id):
         """Remove a player from the game"""
         if socket_id in self.players:
             del self.players[socket_id]
             if socket_id in self.player_order:
                 self.player_order.remove(socket_id)
-    
+
     def start_game(self):
         """Start the game - deal cards and set first card"""
         if len(self.players) < 2:
             return False
-        
+
         self.create_deck()
-        
+
         # Deal 7 cards to each player
         for socket_id in self.player_order:
             for _ in range(7):
@@ -152,7 +155,7 @@ class DosGame:
                     card = self.deck.pop()
                     self.players[socket_id]['hand'].append(card)
             self.players[socket_id]['card_count'] = len(self.players[socket_id]['hand'])
-        
+
         # Draw first card (can't be Wild Draw Four)
         while True:
             if self.deck:
@@ -160,7 +163,7 @@ class DosGame:
                 if first_card['type'] != CardType.WILD_DRAW_FOUR.value:
                     self.discard_pile.append(first_card)
                     self.current_color = first_card['color']
-                    
+
                     # Apply first card effects
                     if first_card['type'] == CardType.SKIP.value:
                         self.current_player_index = 1
@@ -168,34 +171,34 @@ class DosGame:
                         self.direction = -1
                     elif first_card['type'] == CardType.DRAW_TWO.value:
                         self.draw_stack = 2
-                    
+
                     break
                 else:
                     # Put Wild Draw Four back in deck and reshuffle
                     self.deck.insert(random.randint(0, len(self.deck)), first_card)
-        
+
         self.game_started = True
         self.last_action = "Game started!"
         return True
-    
+
     def get_current_player(self):
         """Get the current player's socket ID"""
         if not self.player_order:
             return None
         return self.player_order[self.current_player_index]
-    
+
     def can_play_card(self, card):
         """Check if a card can be played"""
         if not self.discard_pile:
             return False
-        
+
         top_card = self.discard_pile[-1]
-        
+
         # Wild cards can always be played
         if card['type'] in [CardType.WILD.value, CardType.WILD_DRAW_FOUR.value]:
             # +4 can only be played if no other valid card in hand (we'll validate this separately)
             return True
-        
+
         # If there's a draw stack, must play +2 on +2 or +4 on +4
         if self.draw_stack > 0:
             if top_card['type'] == CardType.DRAW_TWO.value and card['type'] == CardType.DRAW_TWO.value:
@@ -203,40 +206,40 @@ class DosGame:
             if top_card['type'] == CardType.WILD_DRAW_FOUR.value and card['type'] == CardType.WILD_DRAW_FOUR.value:
                 return True
             return False
-        
+
         # Match color
         if card['color'] == self.current_color:
             return True
-        
+
         # Match number/type
         if card['value'] == top_card['value']:
             return True
-        
+
         return False
-    
+
     def play_card(self, socket_id, card_id, chosen_color=None):
         """Play a card from player's hand"""
         if not self.game_started:
             return {'success': False, 'message': 'Game not started'}
-        
+
         if self.get_current_player() != socket_id:
             return {'success': False, 'message': 'Not your turn'}
-        
+
         player = self.players[socket_id]
         card_index = next((i for i, c in enumerate(player['hand']) if c['id'] == card_id), None)
-        
+
         if card_index is None:
             return {'success': False, 'message': 'Card not in hand'}
-        
+
         card = player['hand'][card_index]
-        
+
         if not self.can_play_card(card):
             return {'success': False, 'message': 'Cannot play this card'}
-        
+
         # Play the card
         player['hand'].pop(card_index)
         self.discard_pile.append(card)
-        
+
         # Handle card effects
         if card['type'] == CardType.SKIP.value:
             self.last_action = f"{player['name']} played Skip"
@@ -259,32 +262,32 @@ class DosGame:
         else:
             self.current_color = card['color']
             self.last_action = f"{player['name']} played {card['value']}"
-        
+
         # Update card count
         player['card_count'] = len(player['hand'])
-        
+
         # Check for win
         if len(player['hand']) == 0:
             self.winner = socket_id
             self.last_action = f"{player['name']} wins!"
             return {'success': True, 'winner': player['name']}
-        
+
         # Check if DOS should have been called
         if len(player['hand']) == 1 and not player['dos_called']:
             self.dos_challenge_window[socket_id] = True
-        
+
         self.next_turn()
         return {'success': True}
-    
+
     def draw_card(self, socket_id):
         """Draw a card from the deck"""
         if self.get_current_player() != socket_id:
             return {'success': False, 'message': 'Not your turn'}
-        
+
         player = self.players[socket_id]
         cards_to_draw = max(1, self.draw_stack)
         drawn_cards = []
-        
+
         for _ in range(cards_to_draw):
             if not self.deck:
                 self.reshuffle_deck()
@@ -292,17 +295,17 @@ class DosGame:
                 card = self.deck.pop()
                 player['hand'].append(card)
                 drawn_cards.append(card)
-        
+
         player['card_count'] = len(player['hand'])
         self.draw_stack = 0
         self.last_action = f"{player['name']} drew {len(drawn_cards)} card(s)"
-        
+
         # Reset DOS call
         player['dos_called'] = False
-        
+
         self.next_turn()
         return {'success': True, 'cards': drawn_cards}
-    
+
     def call_dos(self, socket_id):
         """Player calls DOS"""
         if socket_id in self.players:
@@ -311,7 +314,7 @@ class DosGame:
                 del self.dos_challenge_window[socket_id]
             return {'success': True}
         return {'success': False}
-    
+
     def challenge_dos(self, challenger_id, challenged_id):
         """Challenge a player who didn't call DOS"""
         if challenged_id in self.dos_challenge_window:
@@ -326,11 +329,11 @@ class DosGame:
                 del self.dos_challenge_window[challenged_id]
                 return {'success': True, 'message': f'{challenged_player["name"]} penalized for not calling DOS!'}
         return {'success': False, 'message': 'Invalid challenge'}
-    
+
     def next_turn(self):
         """Move to the next player"""
         self.current_player_index = (self.current_player_index + self.direction) % len(self.player_order)
-    
+
     def reshuffle_deck(self):
         """Reshuffle discard pile into deck"""
         if len(self.discard_pile) > 1:
@@ -338,13 +341,13 @@ class DosGame:
             self.deck = self.discard_pile
             self.discard_pile = [top_card]
             random.shuffle(self.deck)
-    
+
     def get_game_state(self, socket_id):
         """Get the game state for a specific player"""
         player = self.players.get(socket_id)
         if not player:
             return None
-        
+
         return {
             'your_hand': player['hand'],
             'your_turn': self.get_current_player() == socket_id,

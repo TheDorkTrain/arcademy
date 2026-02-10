@@ -45,6 +45,7 @@ function Paintball({ user, onLogout }) {
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [roundTransition, setRoundTransition] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1.0);
+  const [availableLobbies, setAvailableLobbies] = useState([]);
 
   // Load character images
   useEffect(() => {
@@ -217,6 +218,10 @@ function Paintball({ user, onLogout }) {
     newSocket.on('map_votes', handleMapVotes);
     newSocket.on('player_update', handlePlayerUpdate);
 
+    newSocket.on('lobbies_list', (data) => {
+      setAvailableLobbies(data.lobbies || []);
+    });
+
     newSocket.on('game_started', handleGameStarted);
     newSocket.on('game_update', handleGameUpdate);
     newSocket.on('round_ended', handleRoundEnded);
@@ -261,14 +266,25 @@ function Paintball({ user, onLogout }) {
     
     // Auto-join when URL has roomId and we have a socket connection
     // Only attempt join if we're in menu state and haven't joined yet
-    if (socket && connected && playerName.trim() && gameState === 'menu' && players.length === 0) {
+    if (roomId && socket && connected && playerName.trim() && gameState === 'menu' && players.length === 0) {
       const codeToJoin = roomId.toUpperCase();
       setRoomCode(codeToJoin);
       socket.emit('join_room', { name: playerName, room_code: codeToJoin });
-    } else if (gameState === 'menu') {
+    } else if (roomId && gameState === 'menu') {
       setRoomCode(roomId.toUpperCase());
     }
-  }, [roomId, socket, connected, playerName]);
+  }, [roomId, socket, connected, playerName, gameState, players.length]);
+
+  // Fetch available lobbies periodically when on menu screen
+  useEffect(() => {
+    if (gameState === 'menu' && socket && connected) {
+      socket.emit('get_lobbies');
+      const interval = setInterval(() => {
+        socket.emit('get_lobbies');
+      }, 3000); // Refresh every 3 seconds
+      return () => clearInterval(interval);
+    }
+  }, [gameState, socket, connected]);
 
   const drawGame = useCallback(() => {
     const canvas = canvasRef.current;
@@ -499,6 +515,14 @@ function Paintball({ user, onLogout }) {
     socket.emit('join_room', { name: playerName, room_code: codeToJoin });
   };
 
+  const joinLobby = (lobbyCode) => {
+    if (!playerName.trim()) {
+      setNotification('Please enter your name');
+      return;
+    }
+    socket.emit('join_room', { name: playerName, room_code: lobbyCode });
+  };
+
   const updateRounds = (value) => {
     setRoundsToPlay(value);
     if (isHost) {
@@ -620,10 +644,7 @@ function Paintball({ user, onLogout }) {
                     maxLength={12}
                   />
                 </div>
-              </div>
-              <div className="menu-section">
-                <h3>Lobbies</h3>
-                <div className="paintball-card">
+                <div className="paintball-card" style={{ marginTop: '20px' }}>
                   <div className="lobby-section">
                     <h4>Create Lobby</h4>
                     <input
@@ -639,21 +660,38 @@ function Paintball({ user, onLogout }) {
                       Create Room
                     </button>
                   </div>
-                  <div className="lobby-divider"></div>
-                  <div className="lobby-section">
-                    <h4>Join Lobby</h4>
-                    <input
-                      type="text"
-                      placeholder="Room Code"
-                      value={roomCode}
-                      onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                      className="paintball-input"
-                      maxLength={20}
-                    />
-                    <button className="paintball-btn secondary" onClick={joinRoom}>
-                      Join Room
-                    </button>
-                  </div>
+                </div>
+              </div>
+              <div className="menu-section">
+                <h3>Lobbies</h3>
+                <div className="paintball-card">
+                  {availableLobbies.length === 0 ? (
+                    <div className="no-lobbies">
+                      <p>No active lobbies</p>
+                      <p className="input-hint">Create one to get started!</p>
+                    </div>
+                  ) : (
+                    <div className="lobbies-list">
+                      {availableLobbies.map((lobby) => (
+                        <div key={lobby.room_code} className="lobby-item">
+                          <div className="lobby-info">
+                            <div className="lobby-name">{lobby.room_name}</div>
+                            <div className="lobby-code">{lobby.room_code}</div>
+                            <div className="lobby-players">
+                              {lobby.player_count}/{lobby.max_players} Players
+                            </div>
+                          </div>
+                          <button 
+                            className="paintball-btn secondary" 
+                            onClick={() => joinLobby(lobby.room_code)}
+                            disabled={!playerName.trim()}
+                          >
+                            Join
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

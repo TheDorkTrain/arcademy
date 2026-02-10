@@ -1,6 +1,7 @@
 import pytest
 from would_you_rather_api.question_validator import QuestionEntity
 
+
 class TestQuestionEntity:
     def test_valid_question(self):
         q = QuestionEntity("Fly", "Be invisible", "Superpowers")

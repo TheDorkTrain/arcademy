@@ -1,0 +1,30 @@
+[flake8]
+max-line-length = 120
+exclude = 
+    __pycache__,
+    *.pyc,
+    venv,
+    build,
+    dist,
+    .git,
+    node_modules,
+    frontend
+
+# Ignore specific error codes
+ignore = 
+    # F541: f-string is missing placeholders (these are intentional for consistency)
+    F541,
+    # W503: line break before binary operator (conflicts with PEP 8 update)
+    W503,
+    # W504: line break after binary operator (conflicts with W503)
+    W504
+
+per-file-ignores =
+    # Test files - ignore unused imports as they're test fixtures
+    test_*.py:F401
+    # Allow unused variables in specific cases
+    */__init__.py:F401
+
+# Show statistics
+statistics = True
+count = True

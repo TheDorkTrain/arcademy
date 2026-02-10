@@ -5,7 +5,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 import bcrypt
 from datetime import datetime, timedelta
 import os
-from dotenv import load_dotenv 
+from dotenv import load_dotenv
 from openai import OpenAI
 
 load_dotenv()
@@ -30,15 +30,19 @@ client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 def unauthorized_callback(callback):
     return jsonify({'error': 'Missing or invalid authorization header'}), 401
 
+
 @jwt.invalid_token_loader
 def invalid_token_callback(callback):
     return jsonify({'error': 'Invalid token', 'message': str(callback)}), 422
+
 
 @jwt.expired_token_loader
 def expired_token_callback(jwt_header, jwt_payload):
     return jsonify({'error': 'Token has expired'}), 401
 
 # Models
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -46,6 +50,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     scores = db.relationship('Score', backref='user', lazy=True)
+
 
 class Score(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -55,16 +60,19 @@ class Score(db.Model):
     score_metadata = db.Column(db.String(500))  # JSON string for additional data
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+
 # Create tables
 with app.app_context():
     db.create_all()
 
 # Routes
+
+
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
     username = data.get('username')
-    email = data.get('email')
+    # email = data.get('email')  # Reserved for future use
     password = data.get('password')
 
     if not username or not password:
@@ -75,7 +83,7 @@ def register():
 
     password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     new_user = User(username=username, password_hash=password_hash)
-    
+
     db.session.add(new_user)
     db.session.commit()
 
@@ -88,6 +96,7 @@ def register():
             'username': new_user.username,
         }
     }), 201
+
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -112,12 +121,13 @@ def login():
         }
     }), 200
 
+
 @app.route('/api/scores', methods=['GET'])
 @jwt_required()
 def get_scores():
     user_id = get_jwt_identity()
     scores = Score.query.filter_by(user_id=user_id).order_by(Score.created_at.desc()).all()
-    
+
     # Group scores by game and get best score for each
     game_scores = {}
     for score in scores:
@@ -128,8 +138,9 @@ def get_scores():
                 'score_metadata': score.score_metadata,
                 'created_at': score.created_at.isoformat()
             }
-    
+
     return jsonify(list(game_scores.values())), 200
+
 
 @app.route('/api/scores', methods=['POST'])
 @jwt_required()
@@ -137,7 +148,6 @@ def add_score():
     user_id = int(get_jwt_identity())
     data = request.get_json()
 
-    
     game_name = data.get('game_name')
     score = data.get('score')
     score_metadata = data.get('score_metadata', '')
@@ -160,40 +170,44 @@ def add_score():
         }
     }), 201
 
+
 @app.route('/api/user', methods=['GET'])
 @jwt_required()
 def get_user():
     user_id = int(get_jwt_identity())
     user = User.query.get(user_id)
-    
+
     if not user:
         return jsonify({'error': 'User not found'}), 404
-    
+
     return jsonify({
         'id': user.id,
         'username': user.username,
         'email': user.email
     }), 200
 
+
 @app.route('/api/zork', methods=['POST'])
 def play_zork():
     try:
         user_input = request.json.get('input', '')
-        
+
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "You are playing the game Zork. Respond only with game actions and descriptions."},
+                {"role": "system",
+                 "content": "You are playing the game Zork. Respond only with game actions and descriptions."},
                 {"role": "user", "content": user_input}
             ]
         )
-        
+
         return jsonify({
             'response': response.choices[0].message.content
         }), 200
-        
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

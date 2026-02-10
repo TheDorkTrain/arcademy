@@ -13,7 +13,7 @@ from paintball_game import PaintballGame, MAPS, CHARACTERS
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'paintball-secret-key'
 CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading', logger=True, engineio_logger=True)
 
 # Store active game rooms
 games = {}
@@ -29,9 +29,37 @@ def generate_room_code():
             return code
 
 
+def broadcast_lobbies():
+    """Broadcast updated lobby list to all connected clients"""
+    lobbies = []
+    for room_code, game in games.items():
+        if not game.game_started:
+            lobbies.append({
+                'room_code': room_code,
+                'room_name': game.room_name,
+                'player_count': len(game.players),
+                'max_players': 8
+            })
+    socketio.emit('lobbies_list', {'lobbies': lobbies}, broadcast=True)
+
+
 @socketio.on('connect')
 def handle_connect():
     emit('connected', {'socket_id': request.sid})
+
+
+@socketio.on('get_lobbies')
+def handle_get_lobbies():
+    lobbies = []
+    for room_code, game in games.items():
+        if not game.game_started:  # Only show lobbies that haven't started
+            lobbies.append({
+                'room_code': room_code,
+                'room_name': game.room_name,
+                'player_count': len(game.players),
+                'max_players': 8
+            })
+    emit('lobbies_list', {'lobbies': lobbies})
 
 
 @socketio.on('disconnect')
@@ -42,7 +70,6 @@ def handle_disconnect():
         if room_code in games:
             game = games[room_code]
             player_name = game.players.get(socket_id, {}).get('name', 'Unknown')
-            player_color = game.players.get(socket_id, {}).get('color', '#ffffff')
             game.remove_player(socket_id)
             socketio.emit('player_left', {
                 'player_name': player_name,
@@ -57,6 +84,9 @@ def handle_disconnect():
             }, room=room_code)
             if len(game.players) == 0:
                 del games[room_code]
+                broadcast_lobbies()  # Update lobby list when room is deleted
+            else:
+                broadcast_lobbies()  # Update lobby list when player count changes
         del player_rooms[socket_id]
 
 
@@ -98,9 +128,11 @@ def handle_create_room(data):
         'characters': _characters_payload(),
         'rounds_to_play': game.rounds_to_play
     })
-    
+
+    # Broadcast updated lobby list to all clients
+    broadcast_lobbies()
+
     # Send join notification to room
-    player_color = game.players[socket_id]['color']
     socketio.emit('chat_message', {
         'player': 'System',
         'color': '#94a3b8',
@@ -150,9 +182,11 @@ def handle_join_room(data):
         'characters': _characters_payload(),
         'rounds_to_play': game.rounds_to_play
     })
-    
+
+    # Broadcast updated lobby list to all clients
+    broadcast_lobbies()
+
     # Send join notification to room
-    player_color = game.players[socket_id]['color']
     socketio.emit('chat_message', {
         'player': 'System',
         'color': '#94a3b8',
@@ -237,7 +271,7 @@ def handle_player_move(data):
     move_x = float(data.get('move_x', 0))
     move_y = float(data.get('move_y', 0))
     game.update_player(socket_id, move_x, move_y)
-    
+
     # Update projectiles
     hits = game.update_projectiles()
     for hit in hits:
@@ -246,7 +280,7 @@ def handle_player_move(data):
                 'shooter_id': hit['shooter_id'],
                 'target_id': hit['target_id']
             }, room=room_code)
-    
+
     # Check if round should end
     if game.check_round_over():
         _end_round(game, room_code)

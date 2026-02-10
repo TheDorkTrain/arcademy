@@ -85,6 +85,8 @@ def load_maps():
             if not filename.endswith(".json"):
                 continue
             file_path = os.path.join(maps_dir, filename)
+            with open(file_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
             maps.append(
                 MapConfig(
                     map_id=data["map_id"],
@@ -94,8 +96,6 @@ def load_maps():
                     spawn_points=data["spawn_points"],
                     obstacles=data.get("obstacles", []),
                     background_color=data.get("background_color", "#12263a")
-                )
-            )       spawn_points=data["spawn_points"],
                 )
             )
     if not maps:
@@ -236,6 +236,7 @@ class PaintballGame:
         if not self.round_start_time:
             return False
         return (time.time() - self.round_start_time) >= self.round_duration
+
     def end_round(self):
         if not self.game_started:
             return None
@@ -250,11 +251,11 @@ class PaintballGame:
         ]
         scores_sorted = sorted(scores, key=lambda p: p["eliminations"], reverse=True)
         winner = scores_sorted[0] if scores_sorted else None
-        
+
         # Increment rounds_won for the winner
         if winner and winner["id"] in self.players:
             self.players[winner["id"]]["rounds_won"] += 1
-        
+
         self.match_results.append({
             "round": self.current_round,
             "winner": winner,
@@ -282,21 +283,21 @@ class PaintballGame:
         player = self.players[socket_id]
         character_id = player["character"]
         speed = CHARACTERS[character_id]["speed"]
-        
+
         # Check for speed boost ability (Sprinter)
         if character_id == "sprinter" and player.get("ability_active"):
             if time.time() - player.get("ability_start_time", 0) < 10:
                 speed *= 2
             else:
                 player["ability_active"] = False
-        
+
         new_x = player["x"] + move_x * speed
         new_y = player["y"] + move_y * speed
-        
+
         # Keep within map bounds
         new_x = max(30, min(self.selected_map.width - 30, new_x))
         new_y = max(30, min(self.selected_map.height - 30, new_y))
-        
+
         # Check obstacle collisions (unless Phase is using ability)
         if not (character_id == "phase" and player.get("ability_active")):
             obstacles = getattr(self.selected_map, 'obstacles', [])
@@ -304,10 +305,10 @@ class PaintballGame:
                 if self._check_obstacle_collision(new_x, new_y, 20, obstacle):
                     # Collision detected, don't move
                     return
-        
+
         player["x"] = new_x
         player["y"] = new_y
-    
+
     def _check_obstacle_collision(self, x, y, radius, obstacle):
         """Check if a circle at (x, y) with given radius collides with an obstacle"""
         if obstacle["type"] == "rect":
@@ -331,32 +332,32 @@ class PaintballGame:
             return None
         now = time.time()
         player = self.players[socket_id]
-        
+
         if not player.get("alive", True):
             return None
-            
+
         character_id = player["character"]
         fire_rate = CHARACTERS[character_id]["fire_rate"]
-        
+
         # Blitzer ability: rapid fire
         if character_id == "blitzer" and player.get("ability_active"):
             if time.time() - player.get("ability_start_time", 0) < 5:
                 fire_rate = 0.1  # Much faster fire rate
             else:
                 player["ability_active"] = False
-        
+
         if now - player["last_shot"] < fire_rate:
             return None
         player["last_shot"] = now
         player["aim"] = aim_angle
-        
+
         # Create projectile
         shooter_x = player["x"]
         shooter_y = player["y"]
         shot_range = CHARACTERS[character_id]["range"]
         damage = CHARACTERS[character_id]["damage"]
         projectile_speed = 15
-        
+
         # Sharpshot ability: enhanced shots
         if character_id == "sharpshot" and player.get("ability_shots_remaining", 0) > 0:
             damage *= 1.5
@@ -365,10 +366,10 @@ class PaintballGame:
             player["ability_shots_remaining"] -= 1
             if player["ability_shots_remaining"] <= 0:
                 player["ability_active"] = False
-        
+
         projectile_id = self.next_projectile_id
         self.next_projectile_id += 1
-        
+
         projectile = {
             "id": projectile_id,
             "shooter_id": socket_id,
@@ -383,31 +384,31 @@ class PaintballGame:
             "created_at": now
         }
         self.projectiles.append(projectile)
-        
+
         return projectile
 
     def update_projectiles(self):
         """Update projectile positions and check for hits"""
         if not self.selected_map:
             return []
-        
+
         hits = []
         projectiles_to_remove = []
         barriers_to_damage = []
-        
+
         for proj in self.projectiles:
             # Move projectile
             proj["x"] += proj["vx"]
             proj["y"] += proj["vy"]
             proj["traveled"] += math.hypot(proj["vx"], proj["vy"])
-            
+
             # Check if out of bounds or max distance
             if (proj["traveled"] >= proj["max_distance"] or
                 proj["x"] < 0 or proj["x"] > self.selected_map.width or
-                proj["y"] < 0 or proj["y"] > self.selected_map.height):
+                    proj["y"] < 0 or proj["y"] > self.selected_map.height):
                 projectiles_to_remove.append(proj)
                 continue
-            
+
             # Check obstacle collisions
             obstacles = getattr(self.selected_map, 'obstacles', [])
             hit_obstacle = False
@@ -416,21 +417,21 @@ class PaintballGame:
                     projectiles_to_remove.append(proj)
                     hit_obstacle = True
                     break
-            
+
             if hit_obstacle:
                 continue
-            
+
             # Check barrier collisions
             hit_barrier = False
             for barrier in self.barriers:
                 # Skip if this is the barrier owner's shot
                 if barrier["owner_id"] == proj["shooter_id"]:
                     continue
-                    
+
                 dx = barrier["x"] - proj["x"]
                 dy = barrier["y"] - proj["y"]
                 distance = math.hypot(dx, dy)
-                
+
                 if distance <= 40:  # Barrier hit radius
                     barrier["health"] -= proj["damage"]
                     projectiles_to_remove.append(proj)
@@ -438,28 +439,28 @@ class PaintballGame:
                     if barrier["health"] <= 0:
                         barriers_to_damage.append(barrier)
                     break
-            
+
             if hit_barrier:
                 continue
-            
+
             # Check for player hits
             for pid, target in self.players.items():
                 if pid == proj["shooter_id"] or not target.get("alive", True):
                     continue
-                    
+
                 dx = target["x"] - proj["x"]
                 dy = target["y"] - proj["y"]
                 distance = math.hypot(dx, dy)
-                
+
                 if distance <= 20:  # Hit radius
                     target["health"] -= proj["damage"]
-                    
+
                     if target["health"] <= 0:
                         target["health"] = 0
                         target["alive"] = False
                         self.players[proj["shooter_id"]]["eliminations"] += 1
                         target["deaths"] += 1
-                        
+
                         hits.append({
                             "shooter_id": proj["shooter_id"],
                             "target_id": pid,
@@ -472,37 +473,37 @@ class PaintballGame:
                             "eliminated": False,
                             "damage": proj["damage"]
                         })
-                    
+
                     projectiles_to_remove.append(proj)
                     break
-        
+
         # Remove used projectiles
         for proj in projectiles_to_remove:
             if proj in self.projectiles:
                 self.projectiles.remove(proj)
-        
+
         # Remove destroyed barriers
         for barrier in barriers_to_damage:
             if barrier in self.barriers:
                 self.barriers.remove(barrier)
-        
+
         return hits
 
     def activate_ability(self, socket_id: str):
         """Activate player's character ability"""
         if socket_id not in self.players:
             return False
-        
+
         player = self.players[socket_id]
-        
+
         if player.get("ability_used") or not player.get("alive", True):
             return False
-        
+
         character_id = player["character"]
         player["ability_used"] = True
         player["ability_active"] = True
         player["ability_start_time"] = time.time()
-        
+
         if character_id == "sprinter":
             # Speed boost handled in update_player
             pass
@@ -512,11 +513,11 @@ class PaintballGame:
             # Create barrier
             barrier_id = self.next_barrier_id
             self.next_barrier_id += 1
-            
+
             # Place barrier 60 pixels in front of player
             barrier_x = player["x"] + math.cos(player["aim"]) * 60
             barrier_y = player["y"] + math.sin(player["aim"]) * 60
-            
+
             barrier = {
                 "id": barrier_id,
                 "owner_id": socket_id,
@@ -534,7 +535,7 @@ class PaintballGame:
             # Phase shift - become intangible, pass through walls
             # Handled in update_player and projectile collision
             pass
-        
+
         return True
 
     def check_round_over(self):
@@ -560,12 +561,12 @@ class PaintballGame:
                 "obstacles": self.selected_map.obstacles or [],
                 "background_color": self.selected_map.background_color or "#12263a",
             }
-        
+
         time_remaining = 0
         if self.round_start_time:
             elapsed = time.time() - self.round_start_time
             time_remaining = max(0, self.round_duration - elapsed)
-            
+
         return {
             "room_code": self.room_id,
             "room_name": self.room_name,

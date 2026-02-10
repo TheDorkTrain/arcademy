@@ -4,6 +4,7 @@ from typing import Dict, List, Optional
 QuestionEntity class for representing and validating "Would You Rather" questions.
 """
 
+
 class QuestionEntity:
     """
     Attributes:
@@ -18,7 +19,8 @@ class QuestionEntity:
         valid_categories (List[str]): List of valid categories (defaults to DEFAULT_CATEGORIES).
         errors (List[str]): List of validation errors.
     Methods:
-        __init__(option1: str, option2: str, category: str, option1Votes: int = 0, option2Votes: int = 0, valid_categories: Optional[List[str]] = None):
+        __init__(option1: str, option2: str, category: str, option1Votes: int = 0,
+                 option2Votes: int = 0, valid_categories: Optional[List[str]] = None):
             Initializes a QuestionEntity instance and validates its fields.
         _validate() -> List[str]:
             Validates the question fields and returns a list of error messages.
@@ -27,7 +29,7 @@ class QuestionEntity:
         to_dict() -> Dict:
             Returns a dictionary representation of the question entity.
     """
-    
+
     REQUIRED_FIELDS = ["option1", "option2", "category"]
     DEFAULT_CATEGORIES = [
         "Superpowers", "Entertainment", "Lifestyle", "Time Travel", "Skills",
@@ -35,7 +37,8 @@ class QuestionEntity:
         "Life Control", "Personal Traits", "Basic Needs"
     ]
 
-    def __init__(self, option1: str, option2: str, category: str, option1Votes: int = 0, option2Votes: int = 0, valid_categories: Optional[List[str]] = None):
+    def __init__(self, option1: str, option2: str, category: str, option1Votes: int = 0,
+                 option2Votes: int = 0, valid_categories: Optional[List[str]] = None):
         self.option1 = option1
         self.option2 = option2
         self.category = category
@@ -96,6 +99,7 @@ class QuestionEntity:
             "option1Votes": self.option1Votes,
             "option2Votes": self.option2Votes
         }
+
 
 # Example usage
 if __name__ == "__main__":
