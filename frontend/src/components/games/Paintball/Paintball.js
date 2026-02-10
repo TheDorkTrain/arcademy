@@ -594,7 +594,7 @@ function Paintball({ user, onLogout }) {
       <div className="hub-container">
         <div className="sidebar">
           <div>
-            <h1>🎯 Paintball</h1>
+            <h1>Paintball</h1>
             <h2>Multiplayer Arena</h2>
             <p>Up to 8 players</p>
           </div>
